@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Proposal: Immersive Design & Creative AI Architectures</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+/* PDF Download Button */
+.pdf-button {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    background: #38bdf8;
+    color: #0f172a;
+    padding: 15px 30px;
+    border-radius: 8px;
+    border: none;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.pdf-button:hover {
+    background: #0ea5e9;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+/* Scroll Progress Indicator */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+    z-index: 10000;
+    transition: width 0.1s ease;
+}
+
+@media print {
+    .pdf-button,
+    .scroll-progress {
+        display: none !important;
+    }
+    
+    body {
+        padding: 0 !important;
+        gap: 0 !important;
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        place-items: center !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+    
+    .slide-container {
+        page-break-after: always;
+        box-shadow: none !important;
+        border: none !important;
+        margin: 0 !important;
+        height: 720px !important;
+        width: 1280px !important;
+        min-height: auto !important;
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+    
+    .slide-container * {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+        animation: none !important;
+    }
+    
+    .slide-container:last-child {
+        page-break-after: avoid;
+    }
+    
+    @page {
+        margin: 0;
+        size: 1280px 720px;
+    }
+}
+
+/* 1. SETUP & THEME */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #000000; /* Black */
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  opacity: 0;
+  transition: opacity 0.6s ease-in;
+}
+
+body.loaded {
+  opacity: 1;
+}
+
+body.print-mode {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 1fr;
+  min-height: 100vh;
+  padding: 20px 0;
+  place-items: center;
+  opacity: 1;
+}
+
+.slide-container {
+  background-color: #0f172a; /* Slate 900 */
+  border-radius: 4px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  justify-content: center;
+  overflow: hidden;
+  padding: 60px;
+  position: relative;
+  width: 100%;
+  color: #f8fafc;
+  border: 1px solid #1e293b;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.slide-container.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+body.print-mode .slide-container {
+  height: 720px;
+  width: 1280px;
+  min-height: auto;
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+/* Background Accents */
+.slide-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle at 100% 0%, rgba(56, 189, 248, 0.05), transparent 60%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.slide-container > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* First slide special entrance */
+#slide1 h1 {
+  opacity: 0;
+  transform: translateY(50px) scale(0.98);
+  transition: opacity 1s ease-out, transform 1s ease-out;
+}
+
+#slide1.visible h1 {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition-delay: 0.4s;
+}
+
+#slide1 hr {
+  opacity: 0;
+  width: 0;
+  transition: opacity 0.8s ease-out, width 0.8s ease-out;
+}
+
+#slide1.visible hr {
+  opacity: 1;
+  width: 100px;
+  transition-delay: 1.4s;
+}
+
+#slide1 .subtitle {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+#slide1.visible .subtitle {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 1.6s;
+}
+
+#slide1 img {
+  opacity: 0;
+  transform: translateX(50px) scale(0.95);
+  transition: opacity 1.2s ease-out, transform 1.2s ease-out;
+}
+
+#slide1.visible img {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  transition-delay: 0.8s;
+}
+
+/* Animations for slide elements */
+.slide-container .slide-title,
+.slide-container h1,
+.slide-container h3,
+.slide-container p,
+.slide-container li,
+.slide-container .tile,
+.slide-container .timeline-item,
+.slide-container .context-item {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.slide-container.visible .slide-title {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.2s;
+}
+
+.slide-container.visible h1 {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.1s;
+}
+
+.slide-container.visible h3 {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.3s;
+}
+
+.slide-container.visible p {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.4s;
+}
+
+.slide-container.visible li {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.slide-container.visible li:nth-child(1) { transition-delay: 0.5s; }
+.slide-container.visible li:nth-child(2) { transition-delay: 0.6s; }
+.slide-container.visible li:nth-child(3) { transition-delay: 0.7s; }
+.slide-container.visible li:nth-child(4) { transition-delay: 0.8s; }
+
+.slide-container.visible .tile:nth-child(1) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.3s;
+}
+
+.slide-container.visible .tile:nth-child(2) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.5s;
+}
+
+.slide-container.visible .tile:nth-child(3) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.7s;
+}
+
+.slide-container.visible .timeline-item:nth-child(1) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.3s;
+}
+
+.slide-container.visible .timeline-item:nth-child(2) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.5s;
+}
+
+.slide-container.visible .timeline-item:nth-child(3) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.7s;
+}
+
+.slide-container.visible .timeline-item:nth-child(4) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.9s;
+}
+
+.slide-container.visible .context-item:nth-child(1) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.3s;
+}
+
+.slide-container.visible .context-item:nth-child(2) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.5s;
+}
+
+.slide-container.visible .context-item:nth-child(3) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.7s;
+}
+
+/* Image animations */
+.image-wrapper,
+.instructor-img {
+  opacity: 0;
+  transform: scale(0.95) translateX(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.slide-container.visible .image-wrapper,
+.slide-container.visible .instructor-img {
+  opacity: 1;
+  transform: scale(1) translateX(0);
+  transition-delay: 0.4s;
+}
+
+/* Instructor columns animation */
+.instructor-col {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.slide-container.visible .instructor-col:nth-child(1) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.6s;
+}
+
+.slide-container.visible .instructor-col:nth-child(2) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.7s;
+}
+
+.slide-container.visible .instructor-col:nth-child(3) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.8s;
+}
+
+/* Print mode - disable all animations */
+body.print-mode .slide-container *,
+body.print-mode .image-wrapper,
+body.print-mode .instructor-img,
+body.print-mode .instructor-col {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* 2. TYPOGRAPHY */
+h1, h2, h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  margin: 0;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: 72px;
+  font-weight: 300;
+  color: #f8fafc;
+  margin-bottom: 25px;
+  text-transform: uppercase;
+}
+
+.slide-title {
+  font-size: 52px;
+  font-weight: 500;
+  color: #f1f5f9;
+  margin-bottom: 45px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.slide-title::before {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 52px;
+  background: #38bdf8;
+}
+
+h3 {
+  font-size: 26px;
+  color: #38bdf8; /* Light Blue */
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+p, li {
+  font-size: 20px;
+  line-height: 1.6;
+  color: #cbd5e1;
+  margin-bottom: 20px;
+  font-weight: 300;
+  text-align: left;
+}
+
+ul {
+  padding-left: 20px;
+  list-style: none;
+}
+
+li {
+    position: relative;
+    padding-left: 20px;
+}
+
+li::before {
+  content: '•';
+  color: #38bdf8;
+  position: absolute;
+  left: -5px;
+  font-size: 24px;
+  line-height: 1;
+}
+
+/* 3. LAYOUTS */
+
+.content-area {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Title Layout */
+.title-layout {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  padding-left: 40px;
+}
+
+.title-layout hr {
+    border: none;
+    height: 1px;
+    background: #334155;
+    width: 100px;
+    margin: 30px 0;
+}
+
+.title-layout .subtitle {
+  font-size: 24px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+/* Two Column */
+.two-column {
+  display: grid;
+  grid-template-columns: 1fr 0.8fr;
+  gap: 80px;
+  align-items: center;
+  height: 100%;
+}
+
+.image-wrapper {
+  height: 100%;
+  max-height: 500px;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+  position: relative;
+  background-color: #334155; /* Placeholder bg */
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.two-column .image-wrapper img {
+    object-fit: cover; /* Changed to cover for placeholders */
+}
+
+/* Context List Layout (Slide 2) */
+.context-list {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 100%;
+}
+
+.context-item {
+    border-left: 1px solid #334155;
+    padding-left: 30px;
+}
+
+.context-item h3 {
+    font-size: 26px;
+    color: #f1f5f9;
+    margin-bottom: 10px;
+}
+
+.context-item span {
+    color: #38bdf8;
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 2px;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Tiled Content */
+.tiled-content {
+  display: flex;
+  gap: 30px;
+  width: 100%;
+  height: 100%;
+  align-items: stretch;
+}
+
+.tile {
+  background: #151f32;
+  border: 1px solid #334155;
+  padding: 40px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  border-radius: 8px;
+}
+
+.tile .icon {
+  font-size: 32px;
+  color: #38bdf8;
+  margin-bottom: 25px;
+}
+
+/* Timeline */
+.timeline-layout {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  margin-top: 40px;
+  width: 100%;
+}
+
+.timeline-layout::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #334155;
+  z-index: 0;
+}
+
+.timeline-item {
+  position: relative;
+  z-index: 1;
+  width: 24%;
+  padding-right: 20px;
+}
+
+.timeline-dot {
+    width: 32px;
+    height: 32px;
+    background: #0f172a;
+    border: 1px solid #38bdf8;
+    border-radius: 50%;
+    margin-bottom: 20px;
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+    color: #38bdf8;
+}
+
+/* Instructor Slide */
+.instructor-layout {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.instructor-img {
+    width: 350px;
+    height: 450px;
+    object-fit: cover;
+    filter: grayscale(100%);
+    border-radius: 8px;
+}
+
+.instructor-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.instructor-col {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid #334155;
+    padding: 20px;
+    border-radius: 4px;
+}
+
+.instructor-col h4 {
+    color: #38bdf8;
+    margin: 0 0 10px 0;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    text-transform: uppercase;
+}
+.instructor-col p {
+    font-size: 16px;
+    margin: 0;
+}
+
+.resume-link {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 8px 16px;
+    background: rgba(56, 189, 248, 0.1);
+    color: #38bdf8;
+    text-decoration: none;
+    border: 1px solid #38bdf8;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.resume-link:hover {
+    background: #38bdf8;
+    color: #0f172a;
+}
+
+/* Full Background */
+.full-bg-image {
+  background-size: cover;
+  background-position: center;
+}
+.full-bg-image .content-overlay {
+  background: rgba(15, 23, 42, 0.95);
+  padding: 80px;
+  max-width: 900px;
+  border: 1px solid #334155;
+}
+    </style>
+</head>
+<body>
+
+<!-- Scroll Progress Bar -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- PDF Download Button -->
+<button class="pdf-button" onclick="downloadPDF()">
+    <i class="fa-solid fa-file-pdf"></i>
+    Download PDF
+</button>
+
+<!-- Slide 1: Title Slide -->
+<div class="slide-container" id="slide1" style="display: grid; grid-template-columns: 1fr 500px; gap: 60px; align-items: center;">
+    <div class="title-layout" style="padding-left: 0;">
+        <h1>IMMERSIVE DESIGN &<br><span style="color: #38bdf8;">CREATIVE AI ARCHITECTURES</span></h1>
+        <hr>
+        <p class="subtitle">Academic Module Proposal for Temple University Japan</p>
+    </div>
+    <div style="height: 100%; display: flex; align-items: center; justify-content: center;">
+        <img src="1.png" alt="Design" style="width: 100%; height: auto; max-height: 600px; object-fit: contain; border-radius: 8px;">
+    </div>
+</div>
+
+<!-- Slide 2: Context -->
+<div class="slide-container" id="slide2">
+    <h2 class="slide-title">The New Creative Reality</h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div class="context-list">
+                <div class="context-item">
+                    <span>Context</span>
+                    <h3>Professional Ubiquity</h3>
+                    <p style="font-size: 19px; margin: 0;">AI assistance has become an operational standard across creative industries. The contemporary market demands professionals who can adapt to this ubiquity, requiring a shift from adaptation to mastery.</p>
+                </div>
+                <div class="context-item">
+                    <span>Concept</span>
+                    <h3>Redefining "Being Creative"</h3>
+                    <p style="font-size: 19px; margin: 0;">The industry is shifting from technical execution to dynamic orchestration. Intelligence expands the creative horizon, granting individual creatives the architectural power to build complex systems previously out of reach.</p>
+                </div>
+                <div class="context-item">
+                    <span>Academia</span>
+                    <h3>Reflexive Capacity</h3>
+                    <p style="font-size: 19px; margin: 0;">Technical adaptation is insufficient. The university environment must foster a critical capacity, ensuring students understand the implications of this paradigm shift rather than merely following trends.</p>
+                </div>
+            </div>
+            <div class="image-wrapper" style="background: transparent;">
+                <img src="2.jpg" alt="Creative Reality" style="border-radius: 8px;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 3: Course Objectives -->
+<div class="slide-container" id="slide3">
+    <h2 class="slide-title">Course Objectives</h2>
+    <div class="content-area">
+        <div class="tiled-content">
+            <div class="tile">
+                <div class="icon"><i class="fa-solid fa-shapes"></i></div>
+                <h3>Conceptual Fluency</h3>
+                <p>Understanding the AI landscape beyond the popular discourse. Students will engage with <strong>Creative Coding</strong> and <strong>Generative Art</strong> history to navigate methodologies as informed architects.</p>
+            </div>
+            <div class="tile">
+                <div class="icon"><i class="fa-solid fa-industry"></i></div>
+                <h3>Industry Awareness</h3>
+                <p>The industry standard is now AI-integrated. This course prepares students for a reality where fluency in these systems is expected, bridging the gap between academic theory and the operational demands of top-tier studios.</p>
+            </div>
+            <div class="tile">
+                <div class="icon"><i class="fa-solid fa-laptop-code"></i></div>
+                <h3>From Idea to System</h3>
+                <p>Empowering students to conceptualize and execute complex immersive systems, utilizing Generative AI as a bridge between abstract imagination and tangible implementation.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 4: Roadmap -->
+<div class="slide-container" id="slide4">
+    <h2 class="slide-title">Course Roadmap</h2>
+    <div class="content-area">
+        <div class="timeline-layout">
+            <div class="timeline-item">
+                <div class="timeline-dot">1</div>
+                <h3>The Immersive Landscape</h3>
+                <p>Surveying the field of Immersive Design (VR, AR, Installations) and understanding how AI tools act as assistants to expand creative capabilities.</p>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot">2</div>
+                <h3>AI Agents & Code</h3>
+                <p>Tool Building. Using AI Agents and coding assistants to generate bespoke scripts and creative logic.</p>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot">3</div>
+                <h3>Professional Pipelines</h3>
+                <p>Workflows. Applying custom tools to professional immersive contexts, mimicking studio-level production pipelines.</p>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot">4</div>
+                <h3>Synthesis</h3>
+                <p>Project Development. Integrating these custom tools into a cohesive immersive artwork or experience.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 5: Week 1 Detail -->
+<div class="slide-container" id="slide5">
+    <h2 class="slide-title">Week 1: Immersive Frontiers & AI</h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div>
+                <h3>The Landscape</h3>
+                <ul>
+                    <li><strong>Objective:</strong> To map the intersection of Immersive Design and Artificial Intelligence.</li>
+                    <li><strong>Exploration:</strong> Surveying the breadth of the field—from large-scale installations (TeamLab, Moment Factory) to WebXR and AR. Analyzing how AI tools are currently deployed to enhance these experiences.</li>
+                    <li><strong>Outcome:</strong> Students will identify specific areas where "Creative Coding" and AI assistance can be applied to their own immersive concepts.</li>
+                </ul>
+            </div>
+            <div class="image-wrapper" style="background: transparent;">
+                <img src="5.png" alt="Immersive Frontiers" style="border-radius: 8px;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 6: Week 2 Detail -->
+<div class="slide-container" id="slide6">
+    <h2 class="slide-title">Week 2: AI Agents & Code</h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div class="image-wrapper" style="background: transparent;">
+                 <img src="6.png" alt="AI Agents" style="border-radius: 8px;">
+            </div>
+            <div>
+                <h3>Coding with Agents</h3>
+                <ul>
+                    <li><strong>Objective:</strong> To demystify programming through the use of AI Agents and MCP (Model Context Protocol).</li>
+                    <li><strong>Approach:</strong> Leveraging LLMs as sophisticated coding partners to write scripts for visual platforms (TouchDesigner / Python).</li>
+                    <li><strong>Outcome:</strong> Students learn to direct AI Agents to build the logic they need for expression, effectively becoming technical directors of their own code.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 7: Week 3 Detail -->
+<div class="slide-container" id="slide7">
+    <h2 class="slide-title">Week 3: Custom Workflows</h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div>
+                <h3>Professional Pipelines</h3>
+                <ul>
+                    <li><strong>Objective:</strong> Designing tailored workflows for Immersive Design contexts.</li>
+                    <li><strong>Methodology:</strong> Moving away from presets. Students will learn custom pipelines inspired in studio workflows, preparing them for commercial standards.</li>
+                    <li><strong>Application:</strong> Focusing on how these custom tools scale for real-world applications, such as interactive installations or large-scale immersive projects similar to industry leaders.</li>
+                </ul>
+            </div>
+            <div class="image-wrapper" style="background: transparent;">
+                 <img src="7.png" alt="Custom Workflows" style="border-radius: 8px;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 8: Week 4 Detail -->
+<div class="slide-container" id="slide8">
+    <h2 class="slide-title">Week 4: Immersive Concepts</h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div class="image-wrapper" style="background: transparent; max-height: 600px; height: 600px;">
+                 <img src="art.jpg" alt="Immersive Art" style="object-fit: contain; border-radius: 8px;">
+            </div>
+            <div>
+                <h3>Designing for Space</h3>
+                <ul>
+                    <li><strong>Objective:</strong> To translate digital assets into spatial experiences.</li>
+                    <li><strong>Exploration:</strong> A conceptual deep-dive into AR, VR, and physical installations. How does digital art inhabit a room?</li>
+                    <li><strong>Synthesis:</strong> Students design an immersive project concept that uses their custom-built tools to alter the perception of a space, mixing the virtual with the physical.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 9: Week 5 Detail -->
+<div class="slide-container" id="slide9">
+    <h2 class="slide-title">Week 5: Project Synthesis</h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div>
+                <h3>Final Integration</h3>
+                <ul>
+                    <li><strong>Objective:</strong> The culmination of the 5-week intensive.</li>
+                    <li><strong>Execution:</strong> Students present a coherent project that demonstrates the use of AI not just as a generator, but as a structural component of their creative process.</li>
+                    <li><strong>Reflection:</strong> A final critique session focusing on the "Process" and the "System" built, rather than just the final visual artifact.</li>
+                </ul>
+            </div>
+            <div class="image-wrapper" style="background: transparent; max-height: 600px; height: 600px;">
+                 <img src="8b.jpg" alt="Project Synthesis" style="object-fit: contain; border-radius: 8px;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 10: Technological Framework -->
+<div class="slide-container" id="slide10">
+    <h2 class="slide-title">Technological Framework</h2>
+    <div class="content-area">
+        <div class="tiled-content">
+            <div class="tile">
+                <h3><i class="fa-solid fa-layer-group" style="color:#38bdf8; margin-right: 10px;"></i> Stack Agnostic</h3>
+                <p>The course teaches the methodology, not just the tool. Whether using Blender, Unity, or TouchDesigner, students learn to adapt AI assistance to their preferred software environment.</p>
+            </div>
+            <div class="tile">
+                <h3><i class="fa-solid fa-wand-magic-sparkles" style="color:#38bdf8; margin-right: 10px;"></i> Code Assisted</h3>
+                <p>Leveraging AI assistants to write shaders, scripts, and logic. This democratizes access to complex effects, allowing students to focus on "what" to create, not "how" to type it.</p>
+            </div>
+            <div class="tile">
+                <h3><i class="fa-solid fa-vr-cardboard" style="color:#38bdf8; margin-right: 10px;"></i> Real-Time Immersion</h3>
+                <p>Introduction to Immersive Design concepts, utilizing WebXR and Real-Time rendering engines to deploy creative work into spatial contexts.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 11: Instructor Profile -->
+<div class="slide-container" id="slide11">
+    <h2 class="slide-title">The Instructor</h2>
+    <div class="content-area">
+        <div class="instructor-layout">
+             <img class="instructor-img" src="taller.jpg" alt="Manuel Palenque" style="object-fit: contain; height: 500px; background: transparent; border-radius: 8px;">
+            <div style="height: 100%; display: flex; flex-direction: column; justify-content: center;">
+                <h3 style="font-size: 36px; color: #f8fafc; margin-bottom: 5px;">Manuel Palenque</h3>
+                <p style="color: #94a3b8; font-size: 20px; margin-bottom: 30px;">Senior Creative Technologist</p>
+                
+                <div class="instructor-columns">
+                    <div class="instructor-col">
+                        <h4>Industry</h4>
+                        <p>Senior Creative Technologist at <strong>Superside</strong>. Specialized in immersive design and AI integration. Worked with major clients including <strong>Google, Reddit, Meta, and Microsoft</strong>.</p>
+                    </div>
+                    <div class="instructor-col">
+                        <h4>Artistic Practice</h4>
+                        <p>Visual Artist with performances and exhibitions at <strong>Mutek</strong> (Buenos Aires), <strong>Beyond Code</strong> (Tokyo), <strong>City School of Creative Media</strong> (Hong Kong), and <strong>Telenoika</strong> (Barcelona).</p>
+                    </div>
+                    <div class="instructor-col" style="grid-column: span 2;">
+                        <h4>Pedagogical Experience</h4>
+                        <p>Founder of the Art, Science & Technology platform <a href="http://dataraiz.io/" target="_blank" style="color: #38bdf8; text-decoration: none;"><strong>DATARAIZ.io</strong></a>. Facilitated workshops at <strong>Node Festival</strong> (Berlin), <strong>TECH LAB PAAK</strong> (Tokyo), and <strong>Espacio LAB</strong> (Bogotá).</p>
+                        <a href="https://drive.google.com/file/d/1kLrnObQFyhzh26G9HhrdDi8vIFDMCJCN/view?usp=sharing" target="_blank" class="resume-link">View Full CV</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 12: Value for TUJ -->
+<div class="slide-container" id="slide12">
+    <h2 class="slide-title">Expanding the Horizon</h2>
+    <div class="content-area">
+        <div class="tiled-content">
+            <div class="tile">
+                <h3>Enhancing the Curriculum</h3>
+                <p>Adding a new dimension to TUJ's artistic excellence by introducing "Creative Operations" and "System Design" as core artistic skills.</p>
+            </div>
+            <div class="tile">
+                <h3>Future-Proofing Creatives</h3>
+                <p>Preparing students for a landscape where the ability to build and manage creative systems is as valuable as the ability to design.</p>
+            </div>
+            <div class="tile">
+                <h3>Hybrid Relevance</h3>
+                <p>Attracting a diverse range of students—from designers and developers to working professionals—who seek to merge technical understanding with artistic expression.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 13: Closing -->
+<div class="slide-container" id="slide13">
+    <h2 class="slide-title">Let's Create Together</h2>
+    <div class="content-area">
+        <div class="two-column" style="gap: 60px;">
+            <div>
+                <h1 style="font-size: 48px; margin-bottom: 30px; line-height: 1.2;">CREATING THE NEXT GENERATION<br><span style="color: #38bdf8;">OF IMMERSIVE CREATORS</span></h1>
+                <p style="font-size: 22px; margin-bottom: 40px; color: #cbd5e1;">I invite you to explore this opportunity to bring a forward-thinking, tool-building methodology to the TUJ student body.</p>
+                <div style="padding: 30px; background: rgba(15, 23, 42, 0.5); border-radius: 8px; border: 1px solid #334155;">
+                    <p style="margin: 0; font-size: 18px;"><strong style="color: #38bdf8; font-size: 24px;">Manuel Palenque</strong><br><span style="color: #94a3b8;">Senior Creative Technologist</span><br><a href="mailto:manuel.palenque@superside.com" style="color: #38bdf8; text-decoration: none;">manuel.palenque@superside.com</a></p>
+                </div>
+            </div>
+            <div class="image-wrapper" style="background: transparent; max-height: 600px; height: 600px;">
+                <img src="theater.jpg" alt="Theater" style="object-fit: contain; border-radius: 8px;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Scroll Progress Bar
+function updateScrollProgress() {
+    const scrollProgress = document.getElementById('scrollProgress');
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrollPercentage = (scrollTop / scrollHeight) * 100;
+    scrollProgress.style.width = scrollPercentage + '%';
+}
+
+// Intersection Observer for Slide Animations
+const observerOptions = {
+    threshold: 0.2,
+    rootMargin: '0px 0px -10% 0px'
+};
+
+const slideObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, observerOptions);
+
+// Observe all slides
+document.addEventListener('DOMContentLoaded', () => {
+    const slides = document.querySelectorAll('.slide-container');
+    slides.forEach(slide => {
+        slideObserver.observe(slide);
+    });
+    
+    // Page load animation
+    setTimeout(() => {
+        document.body.classList.add('loaded');
+    }, 100);
+    
+    // Show first slide with elegant entrance after body fade in
+    setTimeout(() => {
+        if (slides.length > 0) {
+            slides[0].classList.add('visible');
+        }
+    }, 300);
+});
+
+// Update scroll progress on scroll
+window.addEventListener('scroll', updateScrollProgress);
+
+// PDF Download Function
+function downloadPDF() {
+    // Add print mode class
+    document.body.classList.add('print-mode');
+    
+    // Make all slides visible for print
+    const slides = document.querySelectorAll('.slide-container');
+    slides.forEach(slide => {
+        slide.classList.add('visible');
+    });
+    
+    // Trigger print
+    setTimeout(() => {
+        window.print();
+        
+        // Remove print mode class after print dialog closes
+        setTimeout(() => {
+            document.body.classList.remove('print-mode');
+        }, 100);
+    }, 100);
+}
+
+// Smooth scroll for better transitions
+document.addEventListener('DOMContentLoaded', () => {
+    document.documentElement.style.scrollBehavior = 'smooth';
+});
+</script>
+
+</body>
+</html>
+```
