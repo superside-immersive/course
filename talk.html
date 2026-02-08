@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4VGP07PQB5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-4VGP07PQB5');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talk: Immersive Design & Creative AI Architectures</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+/* Button Group */
+.button-group {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    display: flex;
+    gap: 10px;
+    z-index: 9999;
+}
+
+/* PDF Download Button */
+.pdf-button, .lang-button {
+    background: #38bdf8;
+    color: #0f172a;
+    padding: 15px 30px;
+    border-radius: 8px;
+    border: none;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.lang-button {
+    background: #1e293b;
+    color: #38bdf8;
+    border: 1px solid #38bdf8;
+}
+
+.lang-button:hover {
+    background: #38bdf8;
+    color: #0f172a;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+.pdf-button:hover {
+    background: #0ea5e9;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+/* Scroll Progress Indicator */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+    z-index: 10000;
+    transition: width 0.1s ease;
+}
+
+@media print {
+    .button-group,
+    .pdf-button,
+    .lang-button,
+    .scroll-progress {
+        display: none !important;
+    }
+    
+    body {
+        padding: 0 !important;
+        gap: 0 !important;
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        place-items: center !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+    
+    .slide-container {
+        page-break-after: always;
+        box-shadow: none !important;
+        border: none !important;
+        margin: 0 !important;
+        height: 720px !important;
+        width: 1280px !important;
+        min-height: auto !important;
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+    
+    .slide-container * {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+        animation: none !important;
+    }
+    
+    .slide-container:last-child {
+        page-break-after: avoid;
+    }
+    
+    @page {
+        margin: 0;
+        size: 1280px 720px;
+    }
+}
+
+/* 1. SETUP & THEME */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #000000; /* Black */
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  opacity: 0;
+  transition: opacity 0.6s ease-in;
+}
+
+body.loaded {
+  opacity: 1;
+}
+
+body.print-mode {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 1fr;
+  min-height: 100vh;
+  padding: 20px 0;
+  place-items: center;
+  opacity: 1;
+}
+
+.slide-container {
+  background-color: #0f172a; /* Slate 900 */
+  border-radius: 4px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  justify-content: center;
+  overflow: hidden;
+  padding: 60px;
+  position: relative;
+  width: 100%;
+  color: #f8fafc;
+  border: 1px solid #1e293b;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.slide-container.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+body.print-mode .slide-container {
+  height: 720px;
+  width: 1280px;
+  min-height: auto;
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+/* Background Accents */
+.slide-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle at 100% 0%, rgba(56, 189, 248, 0.05), transparent 60%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.slide-container > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* First slide special entrance */
+#slide1 h1 {
+  opacity: 0;
+  transform: translateY(50px) scale(0.98);
+  transition: opacity 1s ease-out, transform 1s ease-out;
+}
+
+#slide1.visible h1 {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition-delay: 0.4s;
+}
+
+#slide1 hr {
+  opacity: 0;
+  width: 0;
+  transition: opacity 0.8s ease-out, width 0.8s ease-out;
+}
+
+#slide1.visible hr {
+  opacity: 1;
+  width: 100px;
+  transition-delay: 1.4s;
+}
+
+#slide1 .subtitle {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+#slide1.visible .subtitle {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 1.6s;
+}
+
+#slide1 img {
+  opacity: 0;
+  transform: translateX(50px) scale(0.95);
+  transition: opacity 1.2s ease-out, transform 1.2s ease-out;
+}
+
+#slide1.visible img {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  transition-delay: 0.8s;
+}
+
+/* Animations for slide elements */
+.slide-container .slide-title,
+.slide-container h1,
+.slide-container h3,
+.slide-container p,
+.slide-container li,
+.slide-container .tile,
+.slide-container .timeline-item,
+.slide-container .context-item {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.slide-container.visible .slide-title {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.2s;
+}
+
+.slide-container.visible h1 {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.1s;
+}
+
+.slide-container.visible h3 {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.3s;
+}
+
+.slide-container.visible p {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.4s;
+}
+
+.slide-container.visible li {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.slide-container.visible li:nth-child(1) { transition-delay: 0.5s; }
+.slide-container.visible li:nth-child(2) { transition-delay: 0.6s; }
+.slide-container.visible li:nth-child(3) { transition-delay: 0.7s; }
+.slide-container.visible li:nth-child(4) { transition-delay: 0.8s; }
+
+.slide-container.visible .tile:nth-child(1) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.3s;
+}
+
+.slide-container.visible .tile:nth-child(2) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.5s;
+}
+
+.slide-container.visible .tile:nth-child(3) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.7s;
+}
+
+.slide-container.visible .timeline-item:nth-child(1) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.3s;
+}
+
+.slide-container.visible .timeline-item:nth-child(2) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.5s;
+}
+
+.slide-container.visible .timeline-item:nth-child(3) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.7s;
+}
+
+.slide-container.visible .timeline-item:nth-child(4) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.9s;
+}
+
+.slide-container.visible .context-item:nth-child(1) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.3s;
+}
+
+.slide-container.visible .context-item:nth-child(2) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.5s;
+}
+
+.slide-container.visible .context-item:nth-child(3) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.7s;
+}
+
+/* Image animations */
+.image-wrapper,
+.instructor-img {
+  opacity: 0;
+  transform: scale(0.95) translateX(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.slide-container.visible .image-wrapper,
+.slide-container.visible .instructor-img {
+  opacity: 1;
+  transform: scale(1) translateX(0);
+  transition-delay: 0.4s;
+}
+
+/* Instructor columns animation */
+.instructor-col {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.slide-container.visible .instructor-col:nth-child(1) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.6s;
+}
+
+.slide-container.visible .instructor-col:nth-child(2) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.7s;
+}
+
+.slide-container.visible .instructor-col:nth-child(3) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.8s;
+}
+
+/* Print mode - disable all animations */
+body.print-mode .slide-container *,
+body.print-mode .image-wrapper,
+body.print-mode .instructor-img,
+body.print-mode .instructor-col {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* 2. TYPOGRAPHY */
+h1, h2, h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  margin: 0;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: 72px;
+  font-weight: 300;
+  color: #f8fafc;
+  margin-bottom: 25px;
+  text-transform: uppercase;
+}
+
+.slide-title {
+  font-size: 52px;
+  font-weight: 500;
+  color: #f1f5f9;
+  margin-bottom: 45px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.slide-title::before {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 52px;
+  background: #38bdf8;
+}
+
+h3 {
+  font-size: 26px;
+  color: #38bdf8; /* Light Blue */
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+p, li {
+  font-size: 20px;
+  line-height: 1.6;
+  color: #cbd5e1;
+  margin-bottom: 20px;
+  font-weight: 300;
+  text-align: left;
+}
+
+ul {
+  padding-left: 20px;
+  list-style: none;
+}
+
+li {
+    position: relative;
+    padding-left: 20px;
+}
+
+li::before {
+  content: '•';
+  color: #38bdf8;
+  position: absolute;
+  left: -5px;
+  font-size: 24px;
+  line-height: 1;
+}
+
+/* 3. LAYOUTS */
+
+.content-area {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Title Layout */
+.title-layout {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  padding-left: 40px;
+}
+
+.title-layout hr {
+    border: none;
+    height: 1px;
+    background: #334155;
+    width: 100px;
+    margin: 30px 0;
+}
+
+.title-layout .subtitle {
+  font-size: 24px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+/* Two Column */
+.two-column {
+  display: grid;
+  grid-template-columns: 1fr 0.8fr;
+  gap: 80px;
+  align-items: center;
+  height: 100%;
+}
+
+.image-wrapper {
+  height: 100%;
+  max-height: 500px;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+  position: relative;
+  background-color: #334155; /* Placeholder bg */
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.two-column .image-wrapper img {
+    object-fit: cover; /* Changed to cover for placeholders */
+}
+
+/* Context List Layout (Slide 2) */
+.context-list {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 100%;
+}
+
+.context-item {
+    border-left: 1px solid #334155;
+    padding-left: 30px;
+}
+
+.context-item h3 {
+    font-size: 26px;
+    color: #f1f5f9;
+    margin-bottom: 10px;
+}
+
+.context-item span {
+    color: #38bdf8;
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 2px;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Tiled Content */
+.tiled-content {
+  display: flex;
+  gap: 30px;
+  width: 100%;
+  height: 100%;
+  align-items: stretch;
+}
+
+.tile {
+  background: #151f32;
+  border: 1px solid #334155;
+  padding: 40px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  border-radius: 8px;
+}
+
+.tile .icon {
+  font-size: 32px;
+  color: #38bdf8;
+  margin-bottom: 25px;
+}
+
+/* Timeline */
+.timeline-layout {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  margin-top: 40px;
+  width: 100%;
+}
+
+.timeline-layout::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #334155;
+  z-index: 0;
+}
+
+.timeline-item {
+  position: relative;
+  z-index: 1;
+  width: 24%;
+  padding-right: 20px;
+}
+
+.timeline-dot {
+    width: 32px;
+    height: 32px;
+    background: #0f172a;
+    border: 1px solid #38bdf8;
+    border-radius: 50%;
+    margin-bottom: 20px;
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+    color: #38bdf8;
+}
+
+/* Instructor Slide */
+.instructor-layout {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.instructor-img {
+    width: 350px;
+    height: 450px;
+    object-fit: cover;
+    filter: grayscale(100%);
+    border-radius: 8px;
+}
+
+.instructor-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.instructor-col {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid #334155;
+    padding: 20px;
+    border-radius: 4px;
+}
+
+.instructor-col h4 {
+    color: #38bdf8;
+    margin: 0 0 10px 0;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    text-transform: uppercase;
+}
+.instructor-col p {
+    font-size: 16px;
+    margin: 0;
+}
+
+.resume-link {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 8px 16px;
+    background: rgba(56, 189, 248, 0.1);
+    color: #38bdf8;
+    text-decoration: none;
+    border: 1px solid #38bdf8;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.resume-link:hover {
+    background: #38bdf8;
+    color: #0f172a;
+}
+
+/* Full Background */
+.full-bg-image {
+  background-size: cover;
+  background-position: center;
+}
+.full-bg-image .content-overlay {
+  background: rgba(15, 23, 42, 0.95);
+  padding: 80px;
+  max-width: 900px;
+  border: 1px solid #334155;
+}
+    </style>
+</head>
+<body>
+
+<!-- Scroll Progress Bar -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- Buttons -->
+<div class="button-group">
+    <button class="lang-button" id="langBtn" onclick="toggleLanguage()">
+        <i class="fa-solid fa-language"></i>
+        Español
+    </button>
+    <button class="pdf-button" id="pdfBtn" onclick="downloadPDF()">
+        <i class="fa-solid fa-file-pdf"></i>
+        Download PDF
+    </button>
+</div>
+
+<!-- Slide 1: Title Slide -->
+<div class="slide-container" id="slide1" style="display: grid; grid-template-columns: 1fr 500px; gap: 60px; align-items: center;">
+    <div class="title-layout" style="padding-left: 0;">
+        <h1>IMMERSIVE DESIGN &<br><span style="color: #38bdf8;">CREATIVE AI ARCHITECTURES</span></h1>
+        <hr>
+    <p class="subtitle">TALK</p>
+    </div>
+    <div style="height: 100%; display: flex; align-items: center; justify-content: center;">
+        <img src="1.png" alt="Design" style="width: 100%; height: auto; max-height: 600px; object-fit: contain; border-radius: 8px;">
+    </div>
+</div>
+
+<!-- Slide 2: Context -->
+<div class="slide-container" id="slide2">
+    <h2 class="slide-title">The New Creative Reality</h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div class="context-list">
+                <div class="context-item">
+                    <span>Context</span>
+                    <h3>Professional Ubiquity</h3>
+                    <p style="font-size: 19px; margin: 0;">AI assistance has become an operational standard across creative industries. The contemporary market demands professionals who can adapt to this ubiquity, requiring a shift from adaptation to mastery.</p>
+                </div>
+                <div class="context-item">
+                    <span>Concept</span>
+                    <h3>Redefining "Being Creative"</h3>
+                    <p style="font-size: 19px; margin: 0;">The industry is shifting from technical execution to dynamic orchestration. Intelligence expands the creative horizon, granting individual creatives the architectural power to build complex systems previously out of reach.</p>
+                </div>
+                <div class="context-item">
+                    <span>Reflection</span>
+                    <h3>Critical Thinking</h3>
+                    <p style="font-size: 19px; margin: 0;">Technical adaptation is insufficient. We need to foster a critical capacity, understanding the implications of this paradigm shift rather than merely following trends.</p>
+                </div>
+            </div>
+            <div class="image-wrapper" style="background: transparent;">
+                <img src="2.JPG" alt="Creative Reality" style="border-radius: 8px;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 2b: A Dual Perspective -->
+<div class="slide-container" id="slide2b">
+    <h2 class="slide-title" id="slide2b-title">A Dual Perspective</h2>
+    <div class="content-area">
+        <div class="tiled-content">
+            <div class="tile" style="border-top: 3px solid #38bdf8;">
+                <div class="icon"><i class="fa-solid fa-building"></i></div>
+                <h3 id="slide2b-tile1-h3">The Global Agency</h3>
+                <p id="slide2b-tile1-p">As Lead Creative Technologist at <strong>Superside</strong>, building massive AI systems for brands like Google and Meta. Operating at the intersection of creative operations and enterprise-scale technology.</p>
+            </div>
+            <div class="tile" style="border-top: 3px solid #38bdf8;">
+                <div class="icon"><i class="fa-solid fa-seedling"></i></div>
+                <h3 id="slide2b-tile2-h3">The LATAM Lab</h3>
+                <p id="slide2b-tile2-p">Through <strong><a href="http://dataraiz.io/" target="_blank" style="color: #38bdf8; text-decoration: none;">DataRaíz</a></strong> in Buenos Aires, teaching local artists to "humanize code." Where resilience and hacking limits is cultural, AI becomes a tool for radical democratization.</p>
+            </div>
+            <div class="tile" style="border-top: 3px solid #38bdf8;">
+                <div class="icon"><i class="fa-solid fa-arrows-left-right"></i></div>
+                <h3 id="slide2b-tile3-h3">Bridging the Gap</h3>
+                <p id="slide2b-tile3-p">This talk bridges two often separated worlds: high-efficiency corporate structures and the experimental, resource-constrained artistic ecosystem of Latin America. Innovation thrives where ingenuity is abundant.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 3: What We'll Explore -->
+<div class="slide-container" id="slide3">
+    <h2 class="slide-title">What We'll Explore</h2>
+    <div class="content-area">
+        <div class="tiled-content">
+            <div class="tile">
+                <div class="icon"><i class="fa-solid fa-shapes"></i></div>
+                <h3>From Users to Architects</h3>
+                <p>Moving beyond the popular AI discourse. Shifting from "technical execution" to "dynamic orchestration"—where creatives stop being software users and start building their own systems.</p>
+            </div>
+            <div class="tile">
+                <div class="icon"><i class="fa-solid fa-globe-americas"></i></div>
+                <h3>The LATAM Experience</h3>
+                <p>In Latin America, where hacking limits is cultural, AI becomes a democratizing force. Sharing how resource-constrained ecosystems breed innovation—and what the global industry can learn from it.</p>
+            </div>
+            <div class="tile">
+                <div class="icon"><i class="fa-solid fa-laptop-code"></i></div>
+                <h3>Humanizing Code</h3>
+                <p>Challenging the narrative that AI is just for efficiency. Exploring how it can be humanized for poetic expression—merging human intuition with machine scale, from grassroots labs to global studios.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 4: Talk Flow -->
+<div class="slide-container" id="slide4">
+    <h2 class="slide-title">Talk Flow</h2>
+    <div class="content-area">
+        <div class="timeline-layout">
+            <div class="timeline-item">
+                <div class="timeline-dot">1</div>
+                <h3>The Immersive Landscape</h3>
+                <p>A panoramic view of Immersive Design (VR, AR, Installations) and how AI tools expand creative capabilities.</p>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot">2</div>
+                <h3>AI Agents & Code</h3>
+                <p>Live insights into using AI Agents and coding assistants to generate bespoke scripts and creative logic.</p>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot">3</div>
+                <h3>Professional Pipelines</h3>
+                <p>Sharing real-world workflows and custom tools applied to professional immersive contexts.</p>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot">4</div>
+                <h3>Reflection & Q&A</h3>
+                <p>Open conversation about integrating these ideas into your own creative practice.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 5: Immersive Frontiers -->
+<div class="slide-container" id="slide5">
+  <h2 class="slide-title">Immersive Frontiers & AI</h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div>
+                <h3>The Landscape</h3>
+                <ul>
+                    <li><strong>The Intersection:</strong> Mapping where Immersive Design and Artificial Intelligence converge today.</li>
+                    <li><strong>Exploration:</strong> From large-scale installations (TeamLab, Moment Factory) to WebXR and AR—how AI tools are currently deployed to enhance these experiences.</li>
+                    <li><strong>Insight:</strong> Identifying where "Creative Coding" and AI assistance can unlock new possibilities in immersive concepts.</li>
+                </ul>
+            </div>
+            <div class="image-wrapper" style="background: transparent;">
+                <img src="5.png" alt="Immersive Frontiers" style="border-radius: 8px;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 6: AI Agents & Code -->
+<div class="slide-container" id="slide6">
+  <h2 class="slide-title">AI Agents & Code</h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div class="image-wrapper" style="background: transparent;">
+                 <img src="6.png" alt="AI Agents" style="border-radius: 8px;">
+            </div>
+            <div>
+                <h3>Coding with Agents</h3>
+                <ul>
+                    <li><strong>The Idea:</strong> Demystifying programming through the use of AI Agents and MCP (Model Context Protocol).</li>
+                    <li><strong>Approach:</strong> Leveraging LLMs as sophisticated coding partners to write scripts for visual platforms (TouchDesigner / Python).</li>
+                    <li><strong>Takeaway:</strong> How we can direct AI Agents to build the logic we need for expression, becoming technical directors of our own code.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 7: Custom Workflows -->
+<div class="slide-container" id="slide7">
+  <h2 class="slide-title">Custom Workflows</h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div>
+                <h3>Professional Pipelines</h3>
+                <ul>
+                    <li><strong>The Challenge:</strong> Designing tailored workflows for Immersive Design contexts.</li>
+                    <li><strong>Methodology:</strong> Moving away from presets. Custom pipelines inspired by studio workflows that meet commercial standards.</li>
+                    <li><strong>Real-World Impact:</strong> How these custom tools scale for interactive installations or large-scale immersive projects at industry-leading studios.</li>
+                </ul>
+            </div>
+            <div class="image-wrapper" style="background: transparent;">
+                 <img src="7.png" alt="Custom Workflows" style="border-radius: 8px;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 8: Immersive Concepts -->
+<div class="slide-container" id="slide8">
+  <h2 class="slide-title">Immersive Concepts</h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div class="image-wrapper" style="background: transparent; max-height: 600px; height: 600px;">
+                 <img src="art.jpg" alt="Immersive Art" style="object-fit: contain; border-radius: 8px;">
+            </div>
+            <div>
+                <h3>Designing for Space</h3>
+                <ul>
+                    <li><strong>The Question:</strong> How do we translate digital assets into spatial experiences?</li>
+                    <li><strong>Exploration:</strong> A conceptual deep-dive into AR, VR, and physical installations. How does digital art inhabit a room?</li>
+                    <li><strong>Vision:</strong> Using custom-built tools to alter the perception of a space, mixing the virtual with the physical.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 9: The Bigger Picture -->
+<div class="slide-container" id="slide9">
+  <h2 class="slide-title">The Bigger Picture</h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div>
+                <h3>Process Over Product</h3>
+                <ul>
+          <li><strong>The Shift:</strong> AI is not just a generator—it's a structural component of the creative process.</li>
+                    <li><strong>What Matters:</strong> The "System" you build is as important as the final visual artifact. The process is the work.</li>
+                    <li><strong>Reflection:</strong> How do we evaluate creativity when the tools themselves are intelligent? A conversation worth having.</li>
+                </ul>
+            </div>
+            <div class="image-wrapper" style="background: transparent; max-height: 600px; height: 600px;">
+                 <img src="8b.jpg" alt="The Bigger Picture" style="object-fit: contain; border-radius: 8px;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 9b: Democratizing from LATAM -->
+<div class="slide-container" id="slide9b">
+    <h2 class="slide-title" id="slide9b-title">Democratizing Creative AI</h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div class="context-list">
+                <div class="context-item">
+                    <span id="slide9b-span1">The Thesis</span>
+                    <h3 id="slide9b-h3-1">From Users to System Architects</h3>
+                    <p id="slide9b-p1" style="font-size: 19px; margin: 0;">We must transition from being software users to system architects. Democratization happens when creatives gain the agency to build their own tools, merging human intuition with machine scale.</p>
+                </div>
+                <div class="context-item">
+                    <span id="slide9b-span2">LATAM Perspective</span>
+                    <h3 id="slide9b-h3-2">Where Ingenuity is Abundant</h3>
+                    <p id="slide9b-p2" style="font-size: 19px; margin: 0;">AI often feels like a black box owned by the Global North. But in Latin America, where "hacking" limits is cultural, AI becomes a tool for radical democratization. From Buenos Aires to Tokyo, a "glocal" view on technology.</p>
+                </div>
+                <div class="context-item">
+                    <span id="slide9b-span3">The Challenge</span>
+                    <h3 id="slide9b-h3-3">Humanizing Code</h3>
+                    <p id="slide9b-p3" style="font-size: 19px; margin: 0;">This challenges the narrative that AI is just for efficiency. It can be humanized for poetic expression. Technology must serve the concept rather than dictate it—ensuring the human touch is never lost.</p>
+                </div>
+            </div>
+            <div class="image-wrapper" style="background: transparent;">
+                <img src="2.JPG" alt="Democratizing" style="border-radius: 8px;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 10: Technological Framework -->
+<div class="slide-container" id="slide10">
+    <h2 class="slide-title">Technological Framework</h2>
+    <div class="content-area">
+        <div class="tiled-content">
+            <div class="tile">
+                <h3><i class="fa-solid fa-layer-group" style="color:#38bdf8; margin-right: 10px;"></i> Stack Agnostic</h3>
+                <p>The course teaches the methodology, not just the tool. Whether using Blender, Unity, or TouchDesigner, students learn to adapt AI assistance to their preferred software environment.</p>
+            </div>
+            <div class="tile">
+                <h3><i class="fa-solid fa-wand-magic-sparkles" style="color:#38bdf8; margin-right: 10px;"></i> Code Assisted</h3>
+                <p>Leveraging AI assistants to write shaders, scripts, and logic. This democratizes access to complex effects, allowing students to focus on "what" to create, not "how" to type it.</p>
+            </div>
+            <div class="tile">
+                <h3><i class="fa-solid fa-vr-cardboard" style="color:#38bdf8; margin-right: 10px;"></i> Real-Time Immersion</h3>
+                <p>Introduction to Immersive Design concepts, utilizing WebXR and Real-Time rendering engines to deploy creative work into spatial contexts.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 11: Instructor Profile -->
+<div class="slide-container" id="slide11">
+    <h2 class="slide-title">The Speaker</h2>
+    <div class="content-area">
+        <div class="instructor-layout">
+             <img class="instructor-img" src="taller.jpg" alt="Manuel Palenque" style="object-fit: contain; height: 500px; background: transparent; border-radius: 8px;">
+            <div style="height: 100%; display: flex; flex-direction: column; justify-content: center;">
+                <h3 style="font-size: 36px; color: #f8fafc; margin-bottom: 5px;">Manuel Palenque</h3>
+                <p id="instructor-role" style="color: #94a3b8; font-size: 20px; margin-bottom: 30px;">Lead Creative Technologist — Superside & DataRaíz</p>
+                
+                <div class="instructor-columns">
+                    <div class="instructor-col">
+                        <h4>Industry</h4>
+                        <p>Lead Creative Technologist at <strong>Superside</strong>. Orchestrates AI integration for global clients including <strong>Google, Reddit, Meta, and Microsoft</strong>. Implements AI workflows at Fortune 500 scale.</p>
+                    </div>
+                    <div class="instructor-col">
+                        <h4>Artistic Practice</h4>
+                        <p>Visual Artist with performances and exhibitions at <strong>Mutek</strong> (Buenos Aires), <strong>Beyond Code</strong> (Tokyo), <strong>City School of Creative Media</strong> (Hong Kong), and <strong>Telenoika</strong> (Barcelona).</p>
+                    </div>
+                    <div class="instructor-col" style="grid-column: span 2;">
+                        <h4>Pedagogical Experience</h4>
+                        <p>Founder of the Art, Science & Technology platform <a href="http://dataraiz.io/" target="_blank" style="color: #38bdf8; text-decoration: none;"><strong>DATARAIZ.io</strong></a>. Facilitated workshops at <strong>Node Festival</strong> (Berlin), <strong>TECH LAB PAAK</strong> (Tokyo), and <strong>Espacio LAB</strong> (Bogotá).</p>
+                        <a href="Manuel Palenque - CV.pdf" target="_blank" class="resume-link">View Full CV</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 12: Key Takeaways -->
+<div class="slide-container" id="slide12">
+    <h2 class="slide-title">Key Takeaways</h2>
+    <div class="content-area">
+        <div class="tiled-content">
+            <div class="tile">
+                <h3>System Design as Skill</h3>
+                <p>Adopt "System Design" as a core skill. Shift focus from manual production to designing "dynamic orchestration" workflows that scale creativity without losing the human touch.</p>
+            </div>
+            <div class="tile">
+                <h3>Democratize via Tool-Building</h3>
+                <p>Use AI agents and code assistants to create bespoke creative tools, breaking dependence on standard software presets. Build your tools, don't just use them.</p>
+            </div>
+            <div class="tile">
+                <h3>Bridge the Gap</h3>
+                <p>Merge "Creative Operations" efficiency with "Artistic Practice." Ensure technology serves the concept rather than dictating it—from LATAM grassroots to global scale.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 13: Minoru Quote -->
+<div class="slide-container" id="slide13">
+    <div class="content-area" style="display: flex; align-items: center; justify-content: center; height: 100%;">
+        <div style="display: flex; gap: 60px; align-items: center; max-width: 1100px;">
+            <div style="flex-shrink: 0;">
+                <img src="https://images.prismic.io/takram/ZmcS05m069VX1mtp_person_minoru-ito.jpg?auto=format,compress&rect=0,0,912,912&w=912&h=912" alt="Minoru Ito" style="width: 250px; height: 250px; border-radius: 50%; object-fit: cover; filter: grayscale(100%); border: 2px solid #334155;">
+            </div>
+            <div style="text-align: left;">
+                <i class="fa-solid fa-quote-left" style="font-size: 36px; color: #38bdf8; margin-bottom: 20px; display: block;"></i>
+                <p id="minoru-quote" style="font-size: 22px; line-height: 1.8; color: #e2e8f0; font-style: italic; margin-bottom: 30px;">Manuel is an outstanding artist who explores not only the potential of technology but also the richness of humanity and nature. He has a deep affection for Japan and a strong respect for Japanese culture. He has also conducted creative coding workshops for young people in Shibuya, Tokyo. As a bridge connecting the global creative scene with students studying in Japan, someone like Manuel is an extremely valuable presence.</p>
+                <p style="font-size: 20px; color: #38bdf8; font-weight: 500; margin: 0;">— Minoru Ito</p>
+                <p id="minoru-role" style="font-size: 16px; color: #94a3b8; margin: 5px 0 0 28px;">Design Engineer & Project Director at <a href="https://www.takram.com" target="_blank" style="color: #38bdf8; text-decoration: none;"><strong>Takram</strong></a> — Tokyo</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 14: Closing -->
+<div class="slide-container" id="slide14">
+    <h2 class="slide-title">Let's Connect</h2>
+    <div class="content-area">
+        <div class="two-column" style="gap: 60px;">
+            <div>
+                <h1 style="font-size: 48px; margin-bottom: 30px; line-height: 1.2;">SHARING IDEAS<br><span style="color: #38bdf8;">FOR IMMERSIVE CREATION</span></h1>
+        <p style="font-size: 22px; margin-bottom: 40px; color: #cbd5e1;">Thank you for joining this conversation. Let's keep exploring how we can push the boundaries of creative technology together.</p>
+                <div style="padding: 30px; background: rgba(15, 23, 42, 0.5); border-radius: 8px; border: 1px solid #334155;">
+                    <p style="margin: 0; font-size: 18px;"><strong style="color: #38bdf8; font-size: 24px;">Manuel Palenque</strong><br><span style="color: #94a3b8;">Senior Creative Technologist</span><br><a href="mailto:contact@manuelpalenque.info" style="color: #38bdf8; text-decoration: none;">contact@manuelpalenque.info</a></p>
+                </div>
+            </div>
+            <div class="image-wrapper" style="background: transparent; max-height: 600px; height: 600px;">
+                <img src="theater.jpg" alt="Theater" style="object-fit: contain; border-radius: 8px;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ======== LANGUAGE SYSTEM ========
+let currentLang = 'en';
+
+const translations = {
+  // -- Slide 1 --
+  '#slide1 h1': {
+    en: 'IMMERSIVE DESIGN &<br><span style="color: #38bdf8;">CREATIVE AI ARCHITECTURES</span>',
+    es: 'DISEÑO INMERSIVO &<br><span style="color: #38bdf8;">ARQUITECTURAS DE IA CREATIVA</span>'
+  },
+  '#slide1 .subtitle': { en: 'TALK', es: 'CHARLA' },
+
+  // -- Slide 2 --
+  '#slide2 .slide-title': { en: 'The New Creative Reality', es: 'La Nueva Realidad Creativa' },
+  '#slide2 .context-item:nth-child(1) span': { en: 'Context', es: 'Contexto' },
+  '#slide2 .context-item:nth-child(1) h3': { en: 'Professional Ubiquity', es: 'Ubicuidad Profesional' },
+  '#slide2 .context-item:nth-child(1) p': {
+    en: 'AI assistance has become an operational standard across creative industries. The contemporary market demands professionals who can adapt to this ubiquity, requiring a shift from adaptation to mastery.',
+    es: 'La asistencia de IA se ha convertido en un estándar operativo en las industrias creativas. El mercado contemporáneo demanda profesionales que puedan adaptarse a esta ubicuidad, requiriendo un cambio de la adaptación al dominio.'
+  },
+  '#slide2 .context-item:nth-child(2) span': { en: 'Concept', es: 'Concepto' },
+  '#slide2 .context-item:nth-child(2) h3': { en: 'Redefining "Being Creative"', es: 'Redefiniendo "Ser Creativo"' },
+  '#slide2 .context-item:nth-child(2) p': {
+    en: 'The industry is shifting from technical execution to dynamic orchestration. Intelligence expands the creative horizon, granting individual creatives the architectural power to build complex systems previously out of reach.',
+    es: 'La industria está pasando de la ejecución técnica a la orquestación dinámica. La inteligencia expande el horizonte creativo, otorgando a los creativos individuales el poder arquitectónico para construir sistemas complejos anteriormente fuera de alcance.'
+  },
+  '#slide2 .context-item:nth-child(3) span': { en: 'Reflection', es: 'Reflexión' },
+  '#slide2 .context-item:nth-child(3) h3': { en: 'Critical Thinking', es: 'Pensamiento Crítico' },
+  '#slide2 .context-item:nth-child(3) p': {
+    en: 'Technical adaptation is insufficient. We need to foster a critical capacity, understanding the implications of this paradigm shift rather than merely following trends.',
+    es: 'La adaptación técnica es insuficiente. Necesitamos fomentar una capacidad crítica, comprendiendo las implicaciones de este cambio de paradigma en lugar de simplemente seguir tendencias.'
+  },
+
+  // -- Slide 2b (Dual Perspective) --
+  '#slide2b-title': { en: 'A Dual Perspective', es: 'Una Doble Perspectiva' },
+  '#slide2b-tile1-h3': { en: 'The Global Agency', es: 'La Agencia Global' },
+  '#slide2b-tile1-p': {
+    en: 'As Lead Creative Technologist at <strong>Superside</strong>, building massive AI systems for brands like Google and Meta. Operating at the intersection of creative operations and enterprise-scale technology.',
+    es: 'Como Lead Creative Technologist en <strong>Superside</strong>, construyendo sistemas masivos de IA para marcas como Google y Meta. Operando en la intersección de operaciones creativas y tecnología a escala empresarial.'
+  },
+  '#slide2b-tile2-h3': { en: 'The LATAM Lab', es: 'El Laboratorio LATAM' },
+  '#slide2b-tile2-p': {
+    en: 'Through <strong><a href="http://dataraiz.io/" target="_blank" style="color: #38bdf8; text-decoration: none;">DataRaíz</a></strong> in Buenos Aires, teaching local artists to "humanize code." Where resilience and hacking limits is cultural, AI becomes a tool for radical democratization.',
+    es: 'A través de <strong><a href="http://dataraiz.io/" target="_blank" style="color: #38bdf8; text-decoration: none;">DataRaíz</a></strong> en Buenos Aires, enseñando a artistas locales a "humanizar el código." Donde la resiliencia y hackear los límites es cultural, la IA se convierte en herramienta de democratización radical.'
+  },
+  '#slide2b-tile3-h3': { en: 'Bridging the Gap', es: 'Cerrando la Brecha' },
+  '#slide2b-tile3-p': {
+    en: 'This talk bridges two often separated worlds: high-efficiency corporate structures and the experimental, resource-constrained artistic ecosystem of Latin America. Innovation thrives where ingenuity is abundant.',
+    es: 'Esta charla conecta dos mundos frecuentemente separados: las estructuras corporativas de alta eficiencia y el ecosistema artístico experimental y con recursos limitados de América Latina. La innovación prospera donde el ingenio abunda.'
+  },
+
+  // -- Slide 3 --
+  '#slide3 .slide-title': { en: 'What We\'ll Explore', es: 'Qué Exploraremos' },
+  '#slide3 .tile:nth-child(1) h3': { en: 'From Users to Architects', es: 'De Usuarios a Arquitectos' },
+  '#slide3 .tile:nth-child(1) p': {
+    en: 'Moving beyond the popular AI discourse. Shifting from "technical execution" to "dynamic orchestration"—where creatives stop being software users and start building their own systems.',
+    es: 'Ir más allá del discurso popular sobre IA. Pasar de la "ejecución técnica" a la "orquestación dinámica"—donde los creativos dejan de ser usuarios de software y empiezan a construir sus propios sistemas.'
+  },
+  '#slide3 .tile:nth-child(2) h3': { en: 'The LATAM Experience', es: 'La Experiencia LATAM' },
+  '#slide3 .tile:nth-child(2) p': {
+    en: 'In Latin America, where hacking limits is cultural, AI becomes a democratizing force. Sharing how resource-constrained ecosystems breed innovation—and what the global industry can learn from it.',
+    es: 'En América Latina, donde hackear los límites es cultural, la IA se convierte en una fuerza democratizadora. Compartiendo cómo los ecosistemas con recursos limitados generan innovación—y qué puede aprender la industria global.'
+  },
+  '#slide3 .tile:nth-child(3) h3': { en: 'Humanizing Code', es: 'Humanizar el Código' },
+  '#slide3 .tile:nth-child(3) p': {
+    en: 'Challenging the narrative that AI is just for efficiency. Exploring how it can be humanized for poetic expression—merging human intuition with machine scale, from grassroots labs to global studios.',
+    es: 'Desafiando la narrativa de que la IA es solo para eficiencia. Explorando cómo puede humanizarse para la expresión poética—fusionando la intuición humana con la escala de la máquina, desde laboratorios comunitarios hasta estudios globales.'
+  },
+
+  // -- Slide 4 --
+  '#slide4 .slide-title': { en: 'Talk Flow', es: 'Flujo de la Charla' },
+  '#slide4 .timeline-item:nth-child(1) h3': { en: 'The Immersive Landscape', es: 'El Paisaje Inmersivo' },
+  '#slide4 .timeline-item:nth-child(1) p': {
+    en: 'A panoramic view of Immersive Design (VR, AR, Installations) and how AI tools expand creative capabilities.',
+    es: 'Una vista panorámica del Diseño Inmersivo (VR, AR, Instalaciones) y cómo las herramientas de IA expanden las capacidades creativas.'
+  },
+  '#slide4 .timeline-item:nth-child(2) h3': { en: 'AI Agents & Code', es: 'Agentes IA & Código' },
+  '#slide4 .timeline-item:nth-child(2) p': {
+    en: 'Live insights into using AI Agents and coding assistants to generate bespoke scripts and creative logic.',
+    es: 'Perspectivas en vivo sobre el uso de Agentes IA y asistentes de código para generar scripts a medida y lógica creativa.'
+  },
+  '#slide4 .timeline-item:nth-child(3) h3': { en: 'Professional Pipelines', es: 'Pipelines Profesionales' },
+  '#slide4 .timeline-item:nth-child(3) p': {
+    en: 'Sharing real-world workflows and custom tools applied to professional immersive contexts.',
+    es: 'Compartiendo flujos de trabajo reales y herramientas personalizadas aplicadas a contextos inmersivos profesionales.'
+  },
+  '#slide4 .timeline-item:nth-child(4) h3': { en: 'Reflection & Q&A', es: 'Reflexión & Preguntas' },
+  '#slide4 .timeline-item:nth-child(4) p': {
+    en: 'Open conversation about integrating these ideas into your own creative practice.',
+    es: 'Conversación abierta sobre cómo integrar estas ideas en tu propia práctica creativa.'
+  },
+
+  // -- Slide 5 --
+  '#slide5 .slide-title': { en: 'Immersive Frontiers & AI', es: 'Fronteras Inmersivas & IA' },
+  '#slide5 h3': { en: 'The Landscape', es: 'El Paisaje' },
+  '#slide5 li:nth-child(1)': {
+    en: '<strong>The Intersection:</strong> Mapping where Immersive Design and Artificial Intelligence converge today.',
+    es: '<strong>La Intersección:</strong> Mapeando dónde convergen hoy el Diseño Inmersivo y la Inteligencia Artificial.'
+  },
+  '#slide5 li:nth-child(2)': {
+    en: '<strong>Exploration:</strong> From large-scale installations (TeamLab, Moment Factory) to WebXR and AR—how AI tools are currently deployed to enhance these experiences.',
+    es: '<strong>Exploración:</strong> Desde instalaciones a gran escala (TeamLab, Moment Factory) hasta WebXR y AR—cómo las herramientas de IA se despliegan actualmente para mejorar estas experiencias.'
+  },
+  '#slide5 li:nth-child(3)': {
+    en: '<strong>Insight:</strong> Identifying where "Creative Coding" and AI assistance can unlock new possibilities in immersive concepts.',
+    es: '<strong>Perspectiva:</strong> Identificando dónde el "Creative Coding" y la asistencia de IA pueden desbloquear nuevas posibilidades en conceptos inmersivos.'
+  },
+
+  // -- Slide 6 --
+  '#slide6 .slide-title': { en: 'AI Agents & Code', es: 'Agentes IA & Código' },
+  '#slide6 h3': { en: 'Coding with Agents', es: 'Programando con Agentes' },
+  '#slide6 li:nth-child(1)': {
+    en: '<strong>The Idea:</strong> Demystifying programming through the use of AI Agents and MCP (Model Context Protocol).',
+    es: '<strong>La Idea:</strong> Desmitificar la programación mediante el uso de Agentes IA y MCP (Model Context Protocol).'
+  },
+  '#slide6 li:nth-child(2)': {
+    en: '<strong>Approach:</strong> Leveraging LLMs as sophisticated coding partners to write scripts for visual platforms (TouchDesigner / Python).',
+    es: '<strong>Enfoque:</strong> Aprovechando LLMs como sofisticados compañeros de código para escribir scripts para plataformas visuales (TouchDesigner / Python).'
+  },
+  '#slide6 li:nth-child(3)': {
+    en: '<strong>Takeaway:</strong> How we can direct AI Agents to build the logic we need for expression, becoming technical directors of our own code.',
+    es: '<strong>Conclusión:</strong> Cómo podemos dirigir Agentes IA para construir la lógica que necesitamos para la expresión, convirtiéndonos en directores técnicos de nuestro propio código.'
+  },
+
+  // -- Slide 7 --
+  '#slide7 .slide-title': { en: 'Custom Workflows', es: 'Flujos de Trabajo Personalizados' },
+  '#slide7 h3': { en: 'Professional Pipelines', es: 'Pipelines Profesionales' },
+  '#slide7 li:nth-child(1)': {
+    en: '<strong>The Challenge:</strong> Designing tailored workflows for Immersive Design contexts.',
+    es: '<strong>El Desafío:</strong> Diseñar flujos de trabajo a medida para contextos de Diseño Inmersivo.'
+  },
+  '#slide7 li:nth-child(2)': {
+    en: '<strong>Methodology:</strong> Moving away from presets. Custom pipelines inspired by studio workflows that meet commercial standards.',
+    es: '<strong>Metodología:</strong> Alejándose de los presets. Pipelines personalizados inspirados en flujos de trabajo de estudio que cumplen con estándares comerciales.'
+  },
+  '#slide7 li:nth-child(3)': {
+    en: '<strong>Real-World Impact:</strong> How these custom tools scale for interactive installations or large-scale immersive projects at industry-leading studios.',
+    es: '<strong>Impacto Real:</strong> Cómo estas herramientas personalizadas escalan para instalaciones interactivas o proyectos inmersivos a gran escala en estudios líderes de la industria.'
+  },
+
+  // -- Slide 8 --
+  '#slide8 .slide-title': { en: 'Immersive Concepts', es: 'Conceptos Inmersivos' },
+  '#slide8 h3': { en: 'Designing for Space', es: 'Diseñando para el Espacio' },
+  '#slide8 li:nth-child(1)': {
+    en: '<strong>The Question:</strong> How do we translate digital assets into spatial experiences?',
+    es: '<strong>La Pregunta:</strong> ¿Cómo traducimos activos digitales en experiencias espaciales?'
+  },
+  '#slide8 li:nth-child(2)': {
+    en: '<strong>Exploration:</strong> A conceptual deep-dive into AR, VR, and physical installations. How does digital art inhabit a room?',
+    es: '<strong>Exploración:</strong> Una inmersión conceptual profunda en AR, VR e instalaciones físicas. ¿Cómo habita el arte digital una habitación?'
+  },
+  '#slide8 li:nth-child(3)': {
+    en: '<strong>Vision:</strong> Using custom-built tools to alter the perception of a space, mixing the virtual with the physical.',
+    es: '<strong>Visión:</strong> Usando herramientas construidas a medida para alterar la percepción de un espacio, mezclando lo virtual con lo físico.'
+  },
+
+  // -- Slide 9 --
+  '#slide9 .slide-title': { en: 'The Bigger Picture', es: 'El Panorama General' },
+  '#slide9 h3': { en: 'Process Over Product', es: 'Proceso Sobre Producto' },
+  '#slide9 li:nth-child(1)': {
+    en: '<strong>The Shift:</strong> AI is not just a generator—it\'s a structural component of the creative process.',
+    es: '<strong>El Cambio:</strong> La IA no es solo un generador—es un componente estructural del proceso creativo.'
+  },
+  '#slide9 li:nth-child(2)': {
+    en: '<strong>What Matters:</strong> The "System" you build is as important as the final visual artifact. The process is the work.',
+    es: '<strong>Lo Que Importa:</strong> El "Sistema" que construyes es tan importante como el artefacto visual final. El proceso es la obra.'
+  },
+  '#slide9 li:nth-child(3)': {
+    en: '<strong>Reflection:</strong> How do we evaluate creativity when the tools themselves are intelligent? A conversation worth having.',
+    es: '<strong>Reflexión:</strong> ¿Cómo evaluamos la creatividad cuando las herramientas mismas son inteligentes? Una conversación que vale la pena tener.'
+  },
+
+  // -- Slide 9b (Democratizing) --
+  '#slide9b-title': { en: 'Democratizing Creative AI', es: 'Democratizando la IA Creativa' },
+  '#slide9b-span1': { en: 'The Thesis', es: 'La Tesis' },
+  '#slide9b-h3-1': { en: 'From Users to System Architects', es: 'De Usuarios a Arquitectos de Sistemas' },
+  '#slide9b-p1': {
+    en: 'We must transition from being software users to system architects. Democratization happens when creatives gain the agency to build their own tools, merging human intuition with machine scale.',
+    es: 'Debemos transicionar de ser usuarios de software a arquitectos de sistemas. La democratización ocurre cuando los creativos ganan la agencia para construir sus propias herramientas, fusionando la intuición humana con la escala de la máquina.'
+  },
+  '#slide9b-span2': { en: 'LATAM Perspective', es: 'Perspectiva LATAM' },
+  '#slide9b-h3-2': { en: 'Where Ingenuity is Abundant', es: 'Donde el Ingenio Abunda' },
+  '#slide9b-p2': {
+    en: 'AI often feels like a black box owned by the Global North. But in Latin America, where "hacking" limits is cultural, AI becomes a tool for radical democratization. From Buenos Aires to Tokyo, a "glocal" view on technology.',
+    es: 'La IA a menudo se percibe como una caja negra del Norte Global. Pero en América Latina, donde "hackear" los límites es cultural, la IA se convierte en herramienta de democratización radical. De Buenos Aires a Tokio, una visión "glocal" de la tecnología.'
+  },
+  '#slide9b-span3': { en: 'The Challenge', es: 'El Desafío' },
+  '#slide9b-h3-3': { en: 'Humanizing Code', es: 'Humanizar el Código' },
+  '#slide9b-p3': {
+    en: 'This challenges the narrative that AI is just for efficiency. It can be humanized for poetic expression. Technology must serve the concept rather than dictate it—ensuring the human touch is never lost.',
+    es: 'Esto desafía la narrativa de que la IA es solo para eficiencia. Puede ser humanizada para la expresión poética. La tecnología debe servir al concepto en lugar de dictarlo—asegurando que el toque humano nunca se pierda.'
+  },
+
+  // -- Slide 10 --
+  '#slide10 .slide-title': { en: 'Technological Framework', es: 'Marco Tecnológico' },
+  '#slide10 .tile:nth-child(1) h3': {
+    en: '<i class="fa-solid fa-layer-group" style="color:#38bdf8; margin-right: 10px;"></i> Stack Agnostic',
+    es: '<i class="fa-solid fa-layer-group" style="color:#38bdf8; margin-right: 10px;"></i> Agnóstico de Stack'
+  },
+  '#slide10 .tile:nth-child(1) p': {
+    en: 'The course teaches the methodology, not just the tool. Whether using Blender, Unity, or TouchDesigner, students learn to adapt AI assistance to their preferred software environment.',
+    es: 'La metodología, no solo la herramienta. Ya sea usando Blender, Unity o TouchDesigner, se aprende a adaptar la asistencia de IA al entorno de software preferido.'
+  },
+  '#slide10 .tile:nth-child(2) h3': {
+    en: '<i class="fa-solid fa-wand-magic-sparkles" style="color:#38bdf8; margin-right: 10px;"></i> Code Assisted',
+    es: '<i class="fa-solid fa-wand-magic-sparkles" style="color:#38bdf8; margin-right: 10px;"></i> Asistido por Código'
+  },
+  '#slide10 .tile:nth-child(2) p': {
+    en: 'Leveraging AI assistants to write shaders, scripts, and logic. This democratizes access to complex effects, allowing students to focus on "what" to create, not "how" to type it.',
+    es: 'Aprovechando asistentes de IA para escribir shaders, scripts y lógica. Esto democratiza el acceso a efectos complejos, permitiendo enfocarse en "qué" crear, no en "cómo" escribirlo.'
+  },
+  '#slide10 .tile:nth-child(3) h3': {
+    en: '<i class="fa-solid fa-vr-cardboard" style="color:#38bdf8; margin-right: 10px;"></i> Real-Time Immersion',
+    es: '<i class="fa-solid fa-vr-cardboard" style="color:#38bdf8; margin-right: 10px;"></i> Inmersión en Tiempo Real'
+  },
+  '#slide10 .tile:nth-child(3) p': {
+    en: 'Introduction to Immersive Design concepts, utilizing WebXR and Real-Time rendering engines to deploy creative work into spatial contexts.',
+    es: 'Introducción a conceptos de Diseño Inmersivo, utilizando WebXR y motores de renderizado en tiempo real para desplegar trabajo creativo en contextos espaciales.'
+  },
+
+  // -- Slide 11 --
+  '#slide11 .slide-title': { en: 'The Speaker', es: 'El Ponente' },
+  '#instructor-role': {
+    en: 'Lead Creative Technologist — Superside & DataRaíz',
+    es: 'Lead Creative Technologist — Superside & DataRaíz'
+  },
+  '#slide11 .instructor-col:nth-child(1) h4': { en: 'Industry', es: 'Industria' },
+  '#slide11 .instructor-col:nth-child(1) p': {
+    en: 'Lead Creative Technologist at <strong>Superside</strong>. Orchestrates AI integration for global clients including <strong>Google, Reddit, Meta, and Microsoft</strong>. Implements AI workflows at Fortune 500 scale.',
+    es: 'Lead Creative Technologist en <strong>Superside</strong>. Orquesta integración de IA para clientes globales como <strong>Google, Reddit, Meta y Microsoft</strong>. Implementa flujos de trabajo de IA a escala Fortune 500.'
+  },
+  '#slide11 .instructor-col:nth-child(2) h4': { en: 'Artistic Practice', es: 'Práctica Artística' },
+  '#slide11 .instructor-col:nth-child(2) p': {
+    en: 'Visual Artist with performances and exhibitions at <strong>Mutek</strong> (Buenos Aires), <strong>Beyond Code</strong> (Tokyo), <strong>City School of Creative Media</strong> (Hong Kong), and <strong>Telenoika</strong> (Barcelona).',
+    es: 'Artista Visual con performances y exposiciones en <strong>Mutek</strong> (Buenos Aires), <strong>Beyond Code</strong> (Tokio), <strong>City School of Creative Media</strong> (Hong Kong) y <strong>Telenoika</strong> (Barcelona).'
+  },
+  '#slide11 .instructor-col:nth-child(3) h4': { en: 'Pedagogical Experience', es: 'Experiencia Pedagógica' },
+  '#slide11 .instructor-col:nth-child(3) p': {
+    en: 'Founder of the Art, Science & Technology platform <a href="http://dataraiz.io/" target="_blank" style="color: #38bdf8; text-decoration: none;"><strong>DATARAIZ.io</strong></a>. Facilitated workshops at <strong>Node Festival</strong> (Berlin), <strong>TECH LAB PAAK</strong> (Tokyo), and <strong>Espacio LAB</strong> (Bogotá).',
+    es: 'Fundador de la plataforma de Arte, Ciencia y Tecnología <a href="http://dataraiz.io/" target="_blank" style="color: #38bdf8; text-decoration: none;"><strong>DATARAIZ.io</strong></a>. Facilitó talleres en <strong>Node Festival</strong> (Berlín), <strong>TECH LAB PAAK</strong> (Tokio) y <strong>Espacio LAB</strong> (Bogotá).'
+  },
+  '#slide11 .resume-link': { en: 'View Full CV', es: 'Ver CV Completo' },
+
+  // -- Slide 12 --
+  '#slide12 .slide-title': { en: 'Key Takeaways', es: 'Ideas Clave' },
+  '#slide12 .tile:nth-child(1) h3': { en: 'System Design as Skill', es: 'Diseño de Sistemas como Habilidad' },
+  '#slide12 .tile:nth-child(1) p': {
+    en: 'Adopt "System Design" as a core skill. Shift focus from manual production to designing "dynamic orchestration" workflows that scale creativity without losing the human touch.',
+    es: 'Adoptar el "Diseño de Sistemas" como habilidad central. Cambiar el enfoque de la producción manual al diseño de flujos de "orquestación dinámica" que escalen la creatividad sin perder el toque humano.'
+  },
+  '#slide12 .tile:nth-child(2) h3': { en: 'Democratize via Tool-Building', es: 'Democratizar Construyendo Herramientas' },
+  '#slide12 .tile:nth-child(2) p': {
+    en: 'Use AI agents and code assistants to create bespoke creative tools, breaking dependence on standard software presets. Build your tools, don\'t just use them.',
+    es: 'Usar agentes de IA y asistentes de código para crear herramientas creativas a medida, rompiendo la dependencia de presets estándar. Construí tus herramientas, no solo las uses.'
+  },
+  '#slide12 .tile:nth-child(3) h3': { en: 'Bridge the Gap', es: 'Cerrar la Brecha' },
+  '#slide12 .tile:nth-child(3) p': {
+    en: 'Merge "Creative Operations" efficiency with "Artistic Practice." Ensure technology serves the concept rather than dictating it—from LATAM grassroots to global scale.',
+    es: 'Fusionar la eficiencia de las "Operaciones Creativas" con la "Práctica Artística." Asegurar que la tecnología sirva al concepto en lugar de dictarlo—desde las bases de LATAM a la escala global.'
+  },
+
+  // -- Slide 13 (Minoru) --
+  '#minoru-quote': {
+    en: 'Manuel is an outstanding artist who explores not only the potential of technology but also the richness of humanity and nature. He has a deep affection for Japan and a strong respect for Japanese culture. He has also conducted creative coding workshops for young people in Shibuya, Tokyo. As a bridge connecting the global creative scene with students studying in Japan, someone like Manuel is an extremely valuable presence.',
+    es: 'Manuel es un artista excepcional que explora no solo el potencial de la tecnología sino también la riqueza de la humanidad y la naturaleza. Tiene un profundo afecto por Japón y un fuerte respeto por la cultura japonesa. También ha realizado talleres de creative coding para jóvenes en Shibuya, Tokio. Como puente que conecta la escena creativa global con estudiantes que estudian en Japón, alguien como Manuel es una presencia extremadamente valiosa.'
+  },
+  '#minoru-role': {
+    en: 'Design Engineer & Project Director at <a href="https://www.takram.com" target="_blank" style="color: #38bdf8; text-decoration: none;"><strong>Takram</strong></a> — Tokyo',
+    es: 'Design Engineer & Project Director en <a href="https://www.takram.com" target="_blank" style="color: #38bdf8; text-decoration: none;"><strong>Takram</strong></a> — Tokio'
+  },
+
+  // -- Slide 14 --
+  '#slide14 .slide-title': { en: 'Let\'s Connect', es: 'Conectemos' },
+  '#slide14 h1': {
+    en: 'SHARING IDEAS<br><span style="color: #38bdf8;">FOR IMMERSIVE CREATION</span>',
+    es: 'COMPARTIENDO IDEAS<br><span style="color: #38bdf8;">PARA LA CREACIÓN INMERSIVA</span>'
+  },
+  '#slide14 .two-column > div:first-child > p': {
+    en: 'Thank you for joining this conversation. Let\'s keep exploring how we can push the boundaries of creative technology together.',
+    es: 'Gracias por unirte a esta conversación. Sigamos explorando juntos cómo podemos expandir los límites de la tecnología creativa.'
+  },
+};
+
+function setLanguage(lang) {
+  currentLang = lang;
+  for (const [selector, texts] of Object.entries(translations)) {
+    const el = document.querySelector(selector);
+    if (el) {
+      el.innerHTML = texts[lang];
+    }
+  }
+  // Update buttons
+  const langBtn = document.getElementById('langBtn');
+  const pdfBtn = document.getElementById('pdfBtn');
+  if (lang === 'es') {
+    langBtn.innerHTML = '<i class="fa-solid fa-language"></i> English';
+    pdfBtn.innerHTML = '<i class="fa-solid fa-file-pdf"></i> Descargar PDF';
+  } else {
+    langBtn.innerHTML = '<i class="fa-solid fa-language"></i> Español';
+    pdfBtn.innerHTML = '<i class="fa-solid fa-file-pdf"></i> Download PDF';
+  }
+}
+
+function toggleLanguage() {
+  setLanguage(currentLang === 'en' ? 'es' : 'en');
+}
+
+// ======== SCROLL PROGRESS ========
+function updateScrollProgress() {
+    const scrollProgress = document.getElementById('scrollProgress');
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrollPercentage = (scrollTop / scrollHeight) * 100;
+    scrollProgress.style.width = scrollPercentage + '%';
+}
+
+// ======== INTERSECTION OBSERVER ========
+const observerOptions = {
+    threshold: 0.2,
+    rootMargin: '0px 0px -10% 0px'
+};
+
+const slideObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, observerOptions);
+
+document.addEventListener('DOMContentLoaded', () => {
+    const slides = document.querySelectorAll('.slide-container');
+    slides.forEach(slide => slideObserver.observe(slide));
+    setTimeout(() => document.body.classList.add('loaded'), 100);
+    setTimeout(() => { if (slides.length > 0) slides[0].classList.add('visible'); }, 300);
+});
+
+window.addEventListener('scroll', updateScrollProgress);
+
+// ======== PDF DOWNLOAD (always in Spanish) ========
+function downloadPDF() {
+    const prevLang = currentLang;
+    // Force Spanish for PDF
+    setLanguage('es');
+
+    document.body.classList.add('print-mode');
+    const slides = document.querySelectorAll('.slide-container');
+    slides.forEach(slide => slide.classList.add('visible'));
+
+    setTimeout(() => {
+        window.print();
+        setTimeout(() => {
+            document.body.classList.remove('print-mode');
+            // Restore previous language
+            setLanguage(prevLang);
+        }, 100);
+    }, 100);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.documentElement.style.scrollBehavior = 'smooth';
+});
+</script>
+
+</body>
+</html>
+```
