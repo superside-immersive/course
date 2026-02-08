@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talk Brief: Immersive Design & Creative AI Architectures</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background: #000;
+    font-family: 'Inter', sans-serif;
+    color: #f8fafc;
+    opacity: 0;
+    transition: opacity 0.5s ease-in;
+}
+body.loaded { opacity: 1; }
+
+/* Buttons */
+.button-group {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 8px;
+    z-index: 9999;
+}
+.btn {
+    background: #38bdf8;
+    color: #0f172a;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+}
+.btn:hover {
+    background: #0ea5e9;
+    transform: translateY(-1px);
+}
+.btn-lang {
+    background: #1e293b;
+    color: #38bdf8;
+    border: 1px solid #38bdf8;
+}
+.btn-lang:hover {
+    background: #38bdf8;
+    color: #0f172a;
+}
+
+/* Pages */
+.page {
+    background: #0f172a;
+    width: 1280px;
+    min-height: 720px;
+    margin: 30px auto;
+    padding: 60px 70px;
+    position: relative;
+    border: 1px solid #1e293b;
+    border-radius: 4px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    overflow: hidden;
+}
+.page::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle at 100% 0%, rgba(56,189,248,0.05), transparent 60%);
+    pointer-events: none;
+}
+.page > * { position: relative; z-index: 1; }
+
+/* Typography */
+h1, h2, h3, h4 {
+    font-family: 'Space Grotesk', sans-serif;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+}
+h1 { font-size: 42px; font-weight: 300; text-transform: uppercase; margin-bottom: 8px; }
+h1 span { color: #38bdf8; }
+h2 {
+    font-size: 28px; font-weight: 500; color: #f1f5f9;
+    margin-bottom: 24px;
+    display: flex; align-items: center; gap: 14px;
+}
+h2::before {
+    content: ''; display: block;
+    width: 4px; height: 28px; background: #38bdf8;
+}
+h3 { font-size: 18px; color: #38bdf8; margin-bottom: 8px; font-weight: 600; }
+h4 { font-size: 15px; color: #38bdf8; margin-bottom: 4px; font-weight: 600; text-transform: uppercase; }
+p, li {
+    font-size: 15px; line-height: 1.55; color: #cbd5e1;
+    font-weight: 300; text-align: left;
+}
+p { margin-bottom: 10px; }
+ul { list-style: none; padding: 0; }
+li { padding-left: 14px; position: relative; margin-bottom: 6px; }
+li::before {
+    content: '•'; color: #38bdf8;
+    position: absolute; left: 0; font-size: 16px; line-height: 1;
+}
+a { color: #38bdf8; text-decoration: none; }
+
+/* Layout helpers */
+.header-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 30px; padding-bottom: 20px;
+    border-bottom: 1px solid #334155;
+}
+.header-left { flex: 1; }
+.subtitle {
+    font-size: 16px; color: #94a3b8; text-transform: uppercase;
+    letter-spacing: 2px; font-family: 'Space Grotesk', sans-serif;
+}
+.header-right {
+    text-align: right; flex-shrink: 0;
+}
+.header-right p { font-size: 13px; color: #94a3b8; margin: 2px 0; }
+.header-right a { font-size: 13px; }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+.card {
+    background: #151f32;
+    border: 1px solid #334155;
+    padding: 20px;
+    border-radius: 6px;
+}
+.card-accent { border-top: 3px solid #38bdf8; }
+
+.speaker-row {
+    display: flex; gap: 20px; align-items: center;
+    background: #151f32; border: 1px solid #334155;
+    padding: 16px 20px; border-radius: 6px; margin-top: 16px;
+}
+.speaker-row img {
+    width: 70px; height: 70px; border-radius: 50%;
+    object-fit: cover; filter: grayscale(100%);
+    border: 1px solid #334155;
+}
+.speaker-info h3 { margin-bottom: 2px; color: #f8fafc; font-size: 16px; }
+.speaker-info p { font-size: 13px; margin: 0; color: #94a3b8; }
+
+.quote-box {
+    background: #151f32; border: 1px solid #334155;
+    padding: 20px 24px; border-radius: 6px;
+    border-left: 3px solid #38bdf8;
+}
+.quote-box p { font-style: italic; font-size: 14px; color: #e2e8f0; margin-bottom: 8px; }
+.quote-box .attribution { font-style: normal; font-size: 13px; color: #38bdf8; margin: 0; }
+
+/* Print */
+@media print {
+    .button-group { display: none !important; }
+    body { background: white; padding: 0; }
+    .page {
+        page-break-after: always;
+        box-shadow: none !important;
+        border: none !important;
+        margin: 0 !important;
+        width: 1280px !important;
+        min-height: 720px !important;
+        height: 720px !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    .page:last-child { page-break-after: avoid; }
+    @page { margin: 0; size: 1280px 720px; }
+}
+    </style>
+</head>
+<body>
+
+<div class="button-group">
+    <button class="btn btn-lang" id="langBtn" onclick="toggleLanguage()">
+        <i class="fa-solid fa-language"></i> Español
+    </button>
+    <button class="btn" id="pdfBtn" onclick="downloadPDF()">
+        <i class="fa-solid fa-file-pdf"></i> Download PDF
+    </button>
+</div>
+
+<!-- PAGE 1 -->
+<div class="page" id="page1">
+    <div class="header-row">
+        <div class="header-left">
+            <h1 id="title">IMMERSIVE DESIGN & <span>CREATIVE AI ARCHITECTURES</span></h1>
+            <p class="subtitle" id="format">30-Minute Talk</p>
+        </div>
+        <div class="header-right">
+            <p><strong style="color: #f8fafc;">Manuel Palenque</strong></p>
+            <p id="role-header">Lead Creative Technologist</p>
+            <p>Superside & DataRaíz</p>
+            <a href="mailto:contact@manuelpalenque.info">contact@manuelpalenque.info</a>
+        </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom: 24px;">
+        <div>
+            <h2 id="about-title">About the Talk</h2>
+            <p id="about-p1">AI often feels like a black box owned by the Global North. But in Latin America, where resilience and "hacking" limits is cultural, AI is becoming a tool for radical democratization.</p>
+            <p id="about-p2">This talk presents a dual perspective: building massive AI systems for brands like Google and Meta at <strong>Superside</strong>, while simultaneously teaching local artists to "humanize code" through <strong>DataRaíz</strong> in Buenos Aires.</p>
+            <p id="about-p3">It explores how shifting from "technical execution" to "dynamic orchestration" allows creatives in emerging markets to build their own tools, not just use them. A roadmap for bridging top-tier global operations and grassroots artistic expression.</p>
+        </div>
+        <div>
+            <h2 id="structure-title">Structure (30 min)</h2>
+            <div class="card card-accent" style="margin-bottom: 12px;">
+                <h4 id="struct-1-label">The Context — 5 min</h4>
+                <p id="struct-1-p" style="margin:0; font-size: 14px;">Contrasting the Global Agency world (Superside) with the Latin American Lab (DataRaíz). Setting the dual perspective.</p>
+            </div>
+            <div class="card card-accent" style="margin-bottom: 12px;">
+                <h4 id="struct-2-label">The "Hack" — 15 min</h4>
+                <p id="struct-2-p" style="margin:0; font-size: 14px;">A live breakdown of a creative workflow showing how to build a custom AI tool in real-time to solve a complex artistic problem.</p>
+            </div>
+            <div class="card card-accent">
+                <h4 id="struct-3-label">The Future — 10 min</h4>
+                <p id="struct-3-p" style="margin:0; font-size: 14px;">A visual showcase of results from LATAM creators and artists, proving how these methods democratize access to high-end production.</p>
+            </div>
+        </div>
+    </div>
+
+    <h2 id="takeaways-title">Key Takeaways</h2>
+    <div class="grid-3">
+        <div class="card card-accent">
+            <h3 id="tk1-h3">System Design as Skill</h3>
+            <p id="tk1-p" style="font-size: 14px; margin: 0;">Shift focus from manual production to designing "dynamic orchestration" workflows that scale creativity without losing the human touch.</p>
+        </div>
+        <div class="card card-accent">
+            <h3 id="tk2-h3">Democratize via Tool-Building</h3>
+            <p id="tk2-p" style="font-size: 14px; margin: 0;">Use AI agents and code assistants to create bespoke creative tools, breaking dependence on standard software presets.</p>
+        </div>
+        <div class="card card-accent">
+            <h3 id="tk3-h3">Bridge the Gap</h3>
+            <p id="tk3-p" style="font-size: 14px; margin: 0;">Merge "Creative Operations" efficiency with "Artistic Practice." Ensure technology serves the concept—from LATAM grassroots to global scale.</p>
+        </div>
+    </div>
+</div>
+
+<!-- PAGE 2 -->
+<div class="page" id="page2">
+    <div class="grid-2" style="margin-bottom: 24px;">
+        <div>
+            <h2 id="topics-title">Topics Covered</h2>
+            <div class="card" style="margin-bottom: 12px;">
+                <h3 id="topic1-h3"><i class="fa-solid fa-globe-americas" style="margin-right: 8px;"></i>The LATAM Experience</h3>
+                <p id="topic1-p" style="font-size: 14px; margin: 0;">How resource-constrained ecosystems breed innovation. In Latin America, AI becomes a democratizing force—proving that innovation thrives where ingenuity is abundant.</p>
+            </div>
+            <div class="card" style="margin-bottom: 12px;">
+                <h3 id="topic2-h3"><i class="fa-solid fa-robot" style="margin-right: 8px;"></i>AI Agents & Creative Code</h3>
+                <p id="topic2-p" style="font-size: 14px; margin: 0;">Demystifying programming through AI Agents and MCP. Leveraging LLMs as coding partners for visual platforms like TouchDesigner and Python.</p>
+            </div>
+            <div class="card" style="margin-bottom: 12px;">
+                <h3 id="topic3-h3"><i class="fa-solid fa-cubes" style="margin-right: 8px;"></i>Immersive Design & Spatial Computing</h3>
+                <p id="topic3-p" style="font-size: 14px; margin: 0;">From large-scale installations to WebXR and AR. How custom AI-driven tools translate digital assets into spatial experiences.</p>
+            </div>
+            <div class="card">
+                <h3 id="topic4-h3"><i class="fa-solid fa-heart-pulse" style="margin-right: 8px;"></i>Humanizing Code</h3>
+                <p id="topic4-p" style="font-size: 14px; margin: 0;">Challenging the narrative that AI is just for efficiency. Exploring how it can be humanized for poetic expression—merging intuition with machine scale.</p>
+            </div>
+        </div>
+        <div>
+            <h2 id="speaker-title">The Speaker</h2>
+            <div class="speaker-row" style="margin-bottom: 16px; margin-top: 0;">
+                <img src="taller.jpg" alt="Manuel Palenque">
+                <div class="speaker-info">
+                    <h3>Manuel Palenque</h3>
+                    <p id="speaker-role">Lead Creative Technologist — Superside & DataRaíz</p>
+                    <p id="speaker-country" style="margin-top: 2px;">Argentina</p>
+                </div>
+            </div>
+            <p id="bio-p1" style="font-size: 14px;">Visual Artist and Lead Creative Technologist bridging immersive design and AI architectures. At <strong>Superside</strong>, he orchestrates AI integration for global clients including Google, Reddit, Meta, and Microsoft.</p>
+            <p id="bio-p2" style="font-size: 14px;">Founder of <a href="http://dataraiz.io/" target="_blank"><strong>DATARAIZ.io</strong></a> in Buenos Aires—a platform fostering Art, Science, and Technology. His artistic practice spans performances at <strong>MUTEK</strong>, architectural mapping, and bio-art research.</p>
+            <p id="bio-p3" style="font-size: 14px;">Workshops at <strong>Node Festival</strong> (Berlin), <strong>TECH LAB PAAK</strong> (Tokyo), <strong>Espacio LAB</strong> (Bogotá). Exhibitions at <strong>Beyond Code</strong> (Tokyo), <strong>City School of Creative Media</strong> (Hong Kong), <strong>Telenoika</strong> (Barcelona).</p>
+
+            <div class="quote-box" style="margin-top: 16px;">
+                <p id="quote-text">"Manuel is an outstanding artist who explores not only the potential of technology but also the richness of humanity and nature. As a bridge connecting the global creative scene with students studying in Japan, someone like Manuel is an extremely valuable presence."</p>
+                <p class="attribution">— Minoru Ito, Design Engineer & Project Director at <a href="https://www.takram.com" target="_blank">Takram</a> (Tokyo)</p>
+            </div>
+
+            <h2 id="alignment-title" style="margin-top: 20px;">Content Stream</h2>
+            <div class="card card-accent">
+                <h3 id="alignment-h3"><i class="fa-solid fa-palette" style="margin-right: 8px;"></i>The Creativity Toolbox</h3>
+                <p id="alignment-p" style="font-size: 14px; margin: 0;">The craft, processes, and techniques to achieve creative excellence—moving from adaptation to mastery by building your own creative systems.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentLang = 'en';
+
+const t = {
+    'title': {
+        en: 'IMMERSIVE DESIGN & <span>CREATIVE AI ARCHITECTURES</span>',
+        es: 'DISEÑO INMERSIVO & <span>ARQUITECTURAS DE IA CREATIVA</span>'
+    },
+    'format': { en: '30-Minute Talk', es: 'Charla de 30 Minutos' },
+    'role-header': { en: 'Lead Creative Technologist', es: 'Lead Creative Technologist' },
+    'about-title': { en: 'About the Talk', es: 'Sobre la Charla' },
+    'about-p1': {
+        en: 'AI often feels like a black box owned by the Global North. But in Latin America, where resilience and "hacking" limits is cultural, AI is becoming a tool for radical democratization.',
+        es: 'La IA a menudo se percibe como una caja negra del Norte Global. Pero en América Latina, donde la resiliencia y "hackear" los límites es cultural, la IA se está convirtiendo en una herramienta de democratización radical.'
+    },
+    'about-p2': {
+        en: 'This talk presents a dual perspective: building massive AI systems for brands like Google and Meta at <strong>Superside</strong>, while simultaneously teaching local artists to "humanize code" through <strong>DataRaíz</strong> in Buenos Aires.',
+        es: 'Esta charla presenta una doble perspectiva: construir sistemas masivos de IA para marcas como Google y Meta en <strong>Superside</strong>, mientras simultáneamente se enseña a artistas locales a "humanizar el código" a través de <strong>DataRaíz</strong> en Buenos Aires.'
+    },
+    'about-p3': {
+        en: 'It explores how shifting from "technical execution" to "dynamic orchestration" allows creatives in emerging markets to build their own tools, not just use them. A roadmap for bridging top-tier global operations and grassroots artistic expression.',
+        es: 'Explora cómo pasar de la "ejecución técnica" a la "orquestación dinámica" permite a los creativos en mercados emergentes construir sus propias herramientas, no solo usarlas. Una hoja de ruta para conectar operaciones globales de primer nivel con la expresión artística de base.'
+    },
+    'structure-title': { en: 'Structure (30 min)', es: 'Estructura (30 min)' },
+    'struct-1-label': { en: 'The Context — 5 min', es: 'El Contexto — 5 min' },
+    'struct-1-p': {
+        en: 'Contrasting the Global Agency world (Superside) with the Latin American Lab (DataRaíz). Setting the dual perspective.',
+        es: 'Contrastando el mundo de la agencia global (Superside) con el laboratorio latinoamericano (DataRaíz). Estableciendo la doble perspectiva.'
+    },
+    'struct-2-label': { en: 'The "Hack" — 15 min', es: 'El "Hack" — 15 min' },
+    'struct-2-p': {
+        en: 'A live breakdown of a creative workflow showing how to build a custom AI tool in real-time to solve a complex artistic problem.',
+        es: 'Una deconstrucción en vivo de un flujo de trabajo creativo mostrando cómo construir una herramienta de IA personalizada en tiempo real para resolver un problema artístico complejo.'
+    },
+    'struct-3-label': { en: 'The Future — 10 min', es: 'El Futuro — 10 min' },
+    'struct-3-p': {
+        en: 'A visual showcase of results from LATAM creators and artists, proving how these methods democratize access to high-end production.',
+        es: 'Una muestra visual de resultados de creadores y artistas de LATAM, demostrando cómo estos métodos democratizan el acceso a la producción de alto nivel.'
+    },
+    'takeaways-title': { en: 'Key Takeaways', es: 'Ideas Clave' },
+    'tk1-h3': { en: 'System Design as Skill', es: 'Diseño de Sistemas como Habilidad' },
+    'tk1-p': {
+        en: 'Shift focus from manual production to designing "dynamic orchestration" workflows that scale creativity without losing the human touch.',
+        es: 'Cambiar el enfoque de la producción manual al diseño de flujos de "orquestación dinámica" que escalen la creatividad sin perder el toque humano.'
+    },
+    'tk2-h3': { en: 'Democratize via Tool-Building', es: 'Democratizar Construyendo Herramientas' },
+    'tk2-p': {
+        en: 'Use AI agents and code assistants to create bespoke creative tools, breaking dependence on standard software presets.',
+        es: 'Usar agentes de IA y asistentes de código para crear herramientas creativas a medida, rompiendo la dependencia de presets estándar.'
+    },
+    'tk3-h3': { en: 'Bridge the Gap', es: 'Cerrar la Brecha' },
+    'tk3-p': {
+        en: 'Merge "Creative Operations" efficiency with "Artistic Practice." Ensure technology serves the concept—from LATAM grassroots to global scale.',
+        es: 'Fusionar la eficiencia de las "Operaciones Creativas" con la "Práctica Artística." Asegurar que la tecnología sirva al concepto—desde las bases de LATAM a la escala global.'
+    },
+    'topics-title': { en: 'Topics Covered', es: 'Temas' },
+    'topic1-h3': { en: '<i class="fa-solid fa-globe-americas" style="margin-right: 8px;"></i>The LATAM Experience', es: '<i class="fa-solid fa-globe-americas" style="margin-right: 8px;"></i>La Experiencia LATAM' },
+    'topic1-p': {
+        en: 'How resource-constrained ecosystems breed innovation. In Latin America, AI becomes a democratizing force—proving that innovation thrives where ingenuity is abundant.',
+        es: 'Cómo los ecosistemas con recursos limitados generan innovación. En América Latina, la IA se convierte en fuerza democratizadora—demostrando que la innovación prospera donde el ingenio abunda.'
+    },
+    'topic2-h3': { en: '<i class="fa-solid fa-robot" style="margin-right: 8px;"></i>AI Agents & Creative Code', es: '<i class="fa-solid fa-robot" style="margin-right: 8px;"></i>Agentes IA & Código Creativo' },
+    'topic2-p': {
+        en: 'Demystifying programming through AI Agents and MCP. Leveraging LLMs as coding partners for visual platforms like TouchDesigner and Python.',
+        es: 'Desmitificando la programación mediante Agentes IA y MCP. Aprovechando LLMs como compañeros de código para plataformas visuales como TouchDesigner y Python.'
+    },
+    'topic3-h3': { en: '<i class="fa-solid fa-cubes" style="margin-right: 8px;"></i>Immersive Design & Spatial Computing', es: '<i class="fa-solid fa-cubes" style="margin-right: 8px;"></i>Diseño Inmersivo & Computación Espacial' },
+    'topic3-p': {
+        en: 'From large-scale installations to WebXR and AR. How custom AI-driven tools translate digital assets into spatial experiences.',
+        es: 'Desde instalaciones a gran escala hasta WebXR y AR. Cómo las herramientas personalizadas con IA traducen activos digitales en experiencias espaciales.'
+    },
+    'topic4-h3': { en: '<i class="fa-solid fa-heart-pulse" style="margin-right: 8px;"></i>Humanizing Code', es: '<i class="fa-solid fa-heart-pulse" style="margin-right: 8px;"></i>Humanizar el Código' },
+    'topic4-p': {
+        en: 'Challenging the narrative that AI is just for efficiency. Exploring how it can be humanized for poetic expression—merging intuition with machine scale.',
+        es: 'Desafiando la narrativa de que la IA es solo para eficiencia. Explorando cómo puede humanizarse para la expresión poética—fusionando intuición con escala de máquina.'
+    },
+    'speaker-title': { en: 'The Speaker', es: 'El Ponente' },
+    'speaker-role': { en: 'Lead Creative Technologist — Superside & DataRaíz', es: 'Lead Creative Technologist — Superside & DataRaíz' },
+    'speaker-country': { en: 'Argentina', es: 'Argentina' },
+    'bio-p1': {
+        en: 'Visual Artist and Lead Creative Technologist bridging immersive design and AI architectures. At <strong>Superside</strong>, he orchestrates AI integration for global clients including Google, Reddit, Meta, and Microsoft.',
+        es: 'Artista Visual y Lead Creative Technologist que conecta el diseño inmersivo con las arquitecturas de IA. En <strong>Superside</strong>, orquesta la integración de IA para clientes globales como Google, Reddit, Meta y Microsoft.'
+    },
+    'bio-p2': {
+        en: 'Founder of <a href="http://dataraiz.io/" target="_blank"><strong>DATARAIZ.io</strong></a> in Buenos Aires—a platform fostering Art, Science, and Technology. His artistic practice spans performances at <strong>MUTEK</strong>, architectural mapping, and bio-art research.',
+        es: 'Fundador de <a href="http://dataraiz.io/" target="_blank"><strong>DATARAIZ.io</strong></a> en Buenos Aires—una plataforma que fomenta Arte, Ciencia y Tecnología. Su práctica artística abarca performances en <strong>MUTEK</strong>, mapping arquitectónico e investigación en bio-arte.'
+    },
+    'bio-p3': {
+        en: 'Workshops at <strong>Node Festival</strong> (Berlin), <strong>TECH LAB PAAK</strong> (Tokyo), <strong>Espacio LAB</strong> (Bogotá). Exhibitions at <strong>Beyond Code</strong> (Tokyo), <strong>City School of Creative Media</strong> (Hong Kong), <strong>Telenoika</strong> (Barcelona).',
+        es: 'Talleres en <strong>Node Festival</strong> (Berlín), <strong>TECH LAB PAAK</strong> (Tokio), <strong>Espacio LAB</strong> (Bogotá). Exposiciones en <strong>Beyond Code</strong> (Tokio), <strong>City School of Creative Media</strong> (Hong Kong), <strong>Telenoika</strong> (Barcelona).'
+    },
+    'quote-text': {
+        en: '"Manuel is an outstanding artist who explores not only the potential of technology but also the richness of humanity and nature. As a bridge connecting the global creative scene with students studying in Japan, someone like Manuel is an extremely valuable presence."',
+        es: '"Manuel es un artista excepcional que explora no solo el potencial de la tecnología sino también la riqueza de la humanidad y la naturaleza. Como puente que conecta la escena creativa global con estudiantes que estudian en Japón, alguien como Manuel es una presencia extremadamente valiosa."'
+    },
+    'alignment-title': { en: 'Content Stream', es: 'Línea de Contenido' },
+    'alignment-h3': { en: '<i class="fa-solid fa-palette" style="margin-right: 8px;"></i>The Creativity Toolbox', es: '<i class="fa-solid fa-palette" style="margin-right: 8px;"></i>La Caja de Herramientas Creativa' },
+    'alignment-p': {
+        en: 'The craft, processes, and techniques to achieve creative excellence—moving from adaptation to mastery by building your own creative systems.',
+        es: 'El oficio, los procesos y las técnicas para alcanzar la excelencia creativa—pasando de la adaptación al dominio construyendo tus propios sistemas creativos.'
+    },
+};
+
+function setLanguage(lang) {
+    currentLang = lang;
+    for (const [id, texts] of Object.entries(t)) {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = texts[lang];
+    }
+    document.getElementById('langBtn').innerHTML = lang === 'es'
+        ? '<i class="fa-solid fa-language"></i> English'
+        : '<i class="fa-solid fa-language"></i> Español';
+    document.getElementById('pdfBtn').innerHTML = lang === 'es'
+        ? '<i class="fa-solid fa-file-pdf"></i> Descargar PDF'
+        : '<i class="fa-solid fa-file-pdf"></i> Download PDF';
+}
+
+function toggleLanguage() {
+    setLanguage(currentLang === 'en' ? 'es' : 'en');
+}
+
+function downloadPDF() {
+    const prev = currentLang;
+    setLanguage('es');
+    setTimeout(() => {
+        window.print();
+        setTimeout(() => setLanguage(prev), 100);
+    }, 100);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => document.body.classList.add('loaded'), 100);
+});
+</script>
+</body>
+</html>
